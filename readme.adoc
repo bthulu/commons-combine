@@ -1,0 +1,94 @@
+常用工具类介绍
+|===
+|功能 |类 |说明
+
+|异常:获取包装异常中的异常, checked -> unchecked异常, stacktrace -> string, 递归查找异常, 复用静态异常
+|this:ExceptionUtil
+commons-lang3:org.apache.commons.lang3.exception.ExceptionUtils
+|受检异常转换为非受检异常, 强烈建议ExceptionUtil.unchecked(Throwable), 此方法会欺骗编译器而不是重新new一个非受检异常
+
+|BASE16(即HEX), BASE32, BASE32_HEX, BASE64, BASE64_URL的编解码
+|com.google.common.io.BaseEncoding
+|
+
+|html, xml转义
+|com.google.common.html.HtmlEscapers/XmlEscapers
+commons-text:org.apache.commons.text.StringEscapeUtils
+|guava官方故意未提供反转义, 原因参考: https://stackoverflow.com/questions/34091304/does-guava-provide-a-method-to-unescape-a-string?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa[Does Guava provide a method to unescape a String?]
+
+|md5, sha1, sha256, murmur3...
+|spring:org.springframework.util.DigestUtils(仅md5)
+guava:com.google.common.hash.Hashing:配合com.google.common.io.BaseEncoding在各个进制间转换
+|
+
+|boolean/布尔型:boolean与int/string互转, 包装类型判定
+|commons-lang3:org.apache.commons.lang3.BooleanUtils
+|
+
+|字符串判空, 分割, 索引, 首字母大/小写, 替换, 移除等
+|commons-lang3:org.apache.commons.lang3.StringUtils
+this:StringUtil:针对char分割替换起止匹配等
+|
+
+|字符串分隔
+|commons-lang3:org.apache.commons.lang3.StringUtils
+guava:com.google.common.base.Splitter
+|
+
+|2的倍数的计算, 幂计算, 安全取模, 可控取整方向的相除/开方,
+|guava:com.google.common.math.IntMath/LongMath
+|
+
+|文件操作, 文件树目录遍历, 文件路径
+|this:FileUtil/FileTreeWalker/FilePathUtil
+guava:java.nio.file.Files
+|
+
+|读出InputStream/Reader内容到String或List<String>
+将String写到OutputStream/Writer
+InputStream/Reader与OutputStream/Writer之间的复制
+|this:IOUtil
+|
+
+|int, String/IPV4String, InetAdress/Inet4Address之间的互相转换
+|this:IPUtil
+|
+
+|随机字符串
+|commons-lang:org.apache.commons.lang3.RandomStringUtils
+|
+
+|时间单位ms(毫秒),s(秒),m(分钟),h(小时),d(日),y(年)与毫秒数的转换
+字节大小b(b),k(kb),m(mb),g(gb),t(tb)与字节数的转换
+|this:UnitUtil
+|
+
+|拷贝属性
+|this:BeanUtil
+|仅拷贝字段名及类型相同的属性, 不同的请手动处理, 降低重构复杂度
+
+|反射获取泛型, 字段, 方法, 构造函数及其调用, 无视modifier的范围限制
+|this:ReflectionUtil
+|
+
+|HMAC-SHA1,AES加解密
+|this:CryptoUtil
+|
+
+|通配符比较字符串,ant风格匹配目录
+|this:WildcardMatcher
+|
+
+|日期与字符串互转
+|this:DateFormatter
+|
+
+|旧日期加, 减, 截断等
+|commons-lang:org.apache.commons.lang3.time.DateUtils
+|
+
+|常用的一些正则表达式, 字符串分隔符, 日期格式
+|this:ConstRegex, ConstDelimiter, ConstDatePattern
+|
+
+|===
