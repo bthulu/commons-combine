@@ -3,7 +3,7 @@ package pondcat.commons.combine.constant;
 import java.util.regex.Pattern;
 
 /**
- * @author 孙权
+ * 公共正则
  */
 public class ConstRegex {
 	/**
