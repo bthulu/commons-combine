@@ -291,7 +291,6 @@ public class ReflectionUtil {
 	}
 
 	////////// 构造函数 ////////
-	// TODO:更多函数的封装
 	/**
 	 * 调用构造函数.
 	 */
