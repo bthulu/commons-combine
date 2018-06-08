@@ -11,9 +11,9 @@ import java.lang.reflect.Type;
 
 /**
  * 获取Class信息的工具类
- * 
+ *
  * 1. 查看类是否存在, 还原cglib处理前的类, 获取类泛型
- * 
+ *
  * 2. 获取类名，包名，循环向上的全部父类，全部接口, 其他便捷函数{@link org.apache.commons.lang3.ClassUtils}
  */
 public class ClassUtil {
@@ -32,7 +32,8 @@ public class ClassUtil {
 				classLoader.loadClass(className);
 				return true;
 			}
-		} catch (Throwable ignored) { // NOSONAR
+		}
+		catch (Throwable ignored) { // NOSONAR
 			// Class or one of its dependencies is not present...
 		}
 		return false;
@@ -45,7 +46,8 @@ public class ClassUtil {
 		try {
 			classLoader.loadClass(className);
 			return true;
-		} catch (Throwable ex) { // NOSONAR
+		}
+		catch (Throwable ex) { // NOSONAR
 			// Class or one of its dependencies is not present...
 			return false;
 		}
@@ -68,13 +70,12 @@ public class ClassUtil {
 
 	/**
 	 * 通过反射, 获得Class定义中声明的泛型参数的类型,
-	 * 
+	 *
 	 * 注意泛型必须定义在父类处. 这是唯一可以通过反射从泛型获得Class实例的地方.
-	 * 
+	 *
 	 * 如无法找到, 返回Object.class.
-	 * 
+	 *
 	 * eg. public UserDao extends HibernateDao<User>
-	 * 
 	 * @param clazz The class to introspect
 	 * @return the first generic declaration, or Object.class if cannot be determined
 	 */
@@ -84,13 +85,12 @@ public class ClassUtil {
 
 	/**
 	 * 通过反射, 获得Class定义中声明的父类的泛型参数的类型.
-	 * 
+	 *
 	 * 注意泛型必须定义在父类处. 这是唯一可以通过反射从泛型获得Class实例的地方.
-	 * 
+	 *
 	 * 如无法找到, 返回Object.class.
-	 * 
+	 *
 	 * 如public UserDao extends HibernateDao<User,Long>
-	 * 
 	 * @param clazz clazz The class to introspect
 	 * @param index the Index of the generic declaration, start from 0.
 	 * @return the index generic declaration, or Object.class if cannot be determined
@@ -101,16 +101,19 @@ public class ClassUtil {
 
 		if (!(genType instanceof ParameterizedType)) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(clazz.getSimpleName() + "'s superclass not ParameterizedType");
+				logger.debug(
+						clazz.getSimpleName() + "'s superclass not ParameterizedType");
 			}
 			return Object.class;
 		}
 
 		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
-		Preconditions.checkArgument(index < params.length, "index:%s out of %s's generic params length", index, clazz);
+		Preconditions.checkArgument(index < params.length,
+				"index:%s out of %s's generic params length", index, clazz);
 		if (!(params[index] instanceof Class)) {
 			if (logger.isDebugEnabled()) {
-				logger.warn(clazz.getName() + " not set the actual class on superclass generic parameter");
+				logger.warn(clazz.getName()
+						+ " not set the actual class on superclass generic parameter");
 			}
 			return Object.class;
 		}

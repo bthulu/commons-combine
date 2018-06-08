@@ -1,18 +1,25 @@
 package pondcat.commons.combine;
 
 /**
- * 返回数据包装类, 其中返回码参考了http status的定义.
- * 建议继承此类, 重载{@link #ok(Object)}和{@link #ok(Object, String)}以支持分页
+ * 返回数据包装类, 其中返回码参考了http status的定义. 建议继承此类,
+ * 重载{@link #ok(Object)}和{@link #ok(Object, String)}以支持分页
  */
 public class Result<T> {
 
 	public static final String STATUS_SUCCESS = "200"; // 接口调用成功
+
 	public static final String STATUS_SERVICE_FAILED = "400"; // 业务处理失败
+
 	public static final String STATUS_UNAUTHORIZED = "401"; // 授权权限不足
+
 	public static final String STATUS_FORBIDDEN = "403"; // 拒绝执行请求
+
 	public static final String STATUS_NOT_FOUND = "404"; // 请求资源无法找到
+
 	public static final String STATUS_SERVICE_UNAVAILABLE = "503"; // 服务不可用
+
 	public static final String STATUS_LACK_ARGUMENT = "4001"; // 缺少必选参数
+
 	public static final String STATUS_ILLEGAL_ARGUMENT = "4002"; // 非法的参数
 
 	private String status; // 业务处理状态
@@ -61,8 +68,8 @@ public class Result<T> {
 	}
 
 	/**
-	 * get data without return code handled, any un-success will throw an {@link ResultException}
-	 *
+	 * get data without return code handled, any un-success will throw an
+	 * {@link ResultException}
 	 * @return data
 	 */
 	public T data() {
@@ -73,6 +80,7 @@ public class Result<T> {
 	}
 
 	public static class ImmutableResult<T> extends Result<T> {
+
 		private static final Result<Void> OK = new ImmutableResult<>();
 
 		static {
@@ -106,6 +114,7 @@ public class Result<T> {
 	}
 
 	public static class ResultException extends RuntimeException {
+
 		private final String status;
 
 		private String code;
@@ -123,6 +132,7 @@ public class Result<T> {
 		public String getCode() {
 			return code;
 		}
+
 	}
 
 	public String getStatus() {
@@ -159,7 +169,8 @@ public class Result<T> {
 
 	@Override
 	public String toString() {
-		return "Result{" + "status='" + status + '\'' + ", code='" + code + '\'' + ", data=" + data + ", msg='" + msg
-				+ '\'' + '}';
+		return "Result{" + "status='" + status + '\'' + ", code='" + code + '\''
+				+ ", data=" + data + ", msg='" + msg + '\'' + '}';
 	}
+
 }

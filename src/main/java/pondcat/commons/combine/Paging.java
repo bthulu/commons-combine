@@ -10,14 +10,21 @@ import java.util.regex.Pattern;
  * 分页承载, 接收分页参数, 限制最大分页行数, 返回分页结果
  */
 public class Paging<T> {
+
 	private List<T> content;
+
 	private int pageNumber;
+
 	private int pageSize;
+
 	private long total;
+
 	private String sortBy;
+
 	private String sortOrder;
 
 	private transient int maxPageSize = MAX_PAGE_SIZE_DEFAULT;
+
 	private static final int MAX_PAGE_SIZE_DEFAULT = 100;
 
 	public static final Pattern SORT_BY_REGEX = Pattern.compile("^\\S+$");
@@ -101,7 +108,8 @@ public class Paging<T> {
 		char c0 = sortOrder.charAt(0);
 		if (c0 == 'a' || c0 == 'A') {
 			this.sortOrder = "ASC";
-		} else if (c0 == 'd' || c0 == 'D') {
+		}
+		else if (c0 == 'd' || c0 == 'D') {
 			this.sortOrder = "DESC";
 		}
 	}
@@ -115,4 +123,5 @@ public class Paging<T> {
 		}
 		return null;
 	}
+
 }

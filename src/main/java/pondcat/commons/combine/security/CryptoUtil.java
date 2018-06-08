@@ -13,20 +13,23 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-
 /**
  * 支持HMAC-SHA1消息签名 及 DES/AES对称加密的工具类.
- * 
+ *
  * 支持Hex与Base64两种编码方式.
  */
 public class CryptoUtil {
 
 	private static final String AES_ALG = "AES";
+
 	private static final String AES_CBC_ALG = "AES/CBC/PKCS5Padding";
+
 	private static final String HMACSHA1_ALG = "HmacSHA1";
 
 	private static final int DEFAULT_HMACSHA1_KEYSIZE = 160; // RFC2401
+
 	private static final int DEFAULT_AES_KEYSIZE = 128;
+
 	private static final int DEFAULT_IVSIZE = 16;
 
 	private static volatile SecureRandom random = null;
@@ -45,7 +48,6 @@ public class CryptoUtil {
 	// -- HMAC-SHA1 funciton --//
 	/**
 	 * 使用HMAC-SHA1进行消息签名, 返回字节数组,长度为20字节.
-	 * 
 	 * @param input 原始输入字符数组
 	 * @param key HMAC-SHA1密钥
 	 */
@@ -55,14 +57,14 @@ public class CryptoUtil {
 			Mac mac = Mac.getInstance(HMACSHA1_ALG);
 			mac.init(secretKey);
 			return mac.doFinal(input);
-		} catch (GeneralSecurityException e) {
+		}
+		catch (GeneralSecurityException e) {
 			throw ExceptionUtil.unchecked(e);
 		}
 	}
 
 	/**
 	 * 校验HMAC-SHA1签名是否正确.
-	 * 
 	 * @param expected 已存在的签名
 	 * @param input 原始输入字符串
 	 * @param key 密钥
@@ -82,7 +84,6 @@ public class CryptoUtil {
 	///////////// -- AES funciton --//////////
 	/**
 	 * 使用AES加密原始字符串.
-	 * 
 	 * @param input 原始输入字符数组
 	 * @param key 符合AES要求的密钥
 	 */
@@ -92,7 +93,6 @@ public class CryptoUtil {
 
 	/**
 	 * 使用AES加密原始字符串.
-	 * 
 	 * @param input 原始输入字符数组
 	 * @param key 符合AES要求的密钥
 	 * @param iv 初始向量
@@ -103,7 +103,6 @@ public class CryptoUtil {
 
 	/**
 	 * 使用AES解密字符串, 返回原始字符串.
-	 * 
 	 * @param input Hex编码的加密字符串
 	 * @param key 符合AES要求的密钥
 	 */
@@ -114,7 +113,6 @@ public class CryptoUtil {
 
 	/**
 	 * 使用AES解密字符串, 返回原始字符串.
-	 * 
 	 * @param input Hex编码的加密字符串
 	 * @param key 符合AES要求的密钥
 	 * @param iv 初始向量
@@ -126,7 +124,6 @@ public class CryptoUtil {
 
 	/**
 	 * 使用AES加密或解密无编码的原始字节数组, 返回无编码的字节数组结果.
-	 * 
 	 * @param input 原始字节数组
 	 * @param key 符合AES要求的密钥
 	 * @param mode Cipher.ENCRYPT_MODE 或 Cipher.DECRYPT_MODE
@@ -137,14 +134,14 @@ public class CryptoUtil {
 			Cipher cipher = Cipher.getInstance(AES_ALG);
 			cipher.init(mode, secretKey);
 			return cipher.doFinal(input);
-		} catch (GeneralSecurityException e) {
+		}
+		catch (GeneralSecurityException e) {
 			throw ExceptionUtil.unchecked(e);
 		}
 	}
 
 	/**
 	 * 使用AES加密或解密无编码的原始字节数组, 返回无编码的字节数组结果.
-	 * 
 	 * @param input 原始字节数组
 	 * @param key 符合AES要求的密钥
 	 * @param iv 初始向量
@@ -157,7 +154,8 @@ public class CryptoUtil {
 			Cipher cipher = Cipher.getInstance(AES_CBC_ALG);
 			cipher.init(mode, secretKey, ivSpec);
 			return cipher.doFinal(input);
-		} catch (GeneralSecurityException e) {
+		}
+		catch (GeneralSecurityException e) {
 			throw ExceptionUtil.unchecked(e);
 		}
 	}
@@ -191,8 +189,10 @@ public class CryptoUtil {
 			keyGenerator.init(keySize);
 			SecretKey secretKey = keyGenerator.generateKey();
 			return secretKey.getEncoded();
-		} catch (GeneralSecurityException e) {
+		}
+		catch (GeneralSecurityException e) {
 			throw ExceptionUtil.unchecked(e);
 		}
 	}
+
 }

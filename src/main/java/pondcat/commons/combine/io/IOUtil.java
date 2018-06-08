@@ -9,13 +9,13 @@ import java.util.List;
 
 /**
  * IO Stream/Reader相关工具集. 固定encoding为UTF8.
- * 
- * 建议使用Apache Commons IO和Guava关于IO的工具类(com.google.common.io.*), 在未引入Commons IO时可以用本类做最基本的事情.
- * 
- * 1. 读出InputStream/Reader内容到String或List<String>
- * 2. 将String写到OutputStream/Writer
- * 3. InputStream/Reader与OutputStream/Writer之间的复制
- * 
+ *
+ * 建议使用Apache Commons IO和Guava关于IO的工具类(com.google.common.io.*), 在未引入Commons
+ * IO时可以用本类做最基本的事情.
+ *
+ * 1. 读出InputStream/Reader内容到String或List<String> 2. 将String写到OutputStream/Writer 3.
+ * InputStream/Reader与OutputStream/Writer之间的复制
+ *
  */
 public class IOUtil {
 
@@ -29,7 +29,7 @@ public class IOUtil {
 
 	/**
 	 * 简单读取Reader到String
-	 * 
+	 *
 	 * @see CharStreams#toString
 	 */
 	public static String toString(Reader input) throws IOException {
@@ -45,7 +45,7 @@ public class IOUtil {
 
 	/**
 	 * 简单读取Reader的每行内容到List<String>
-	 * 
+	 *
 	 * @see CharStreams#readLines
 	 */
 	public static List<String> toLines(final Reader input) throws IOException {
@@ -55,7 +55,8 @@ public class IOUtil {
 	/**
 	 * 简单写入String到OutputStream.
 	 */
-	public static void write(final String data, final OutputStream output) throws IOException {
+	public static void write(final String data, final OutputStream output)
+			throws IOException {
 		if (data != null) {
 			output.write(data.getBytes(StandardCharsets.UTF_8));
 		}
@@ -72,7 +73,7 @@ public class IOUtil {
 
 	/**
 	 * 在Reader与Writer间复制内容
-	 * 
+	 *
 	 * @see CharStreams#copy
 	 */
 	public static long copy(final Reader input, final Writer output) throws IOException {
@@ -81,14 +82,17 @@ public class IOUtil {
 
 	/**
 	 * 在InputStream与OutputStream间复制内容
-	 * 
+	 *
 	 * @see ByteStreams#copy
 	 */
-	public static long copy(final InputStream input, final OutputStream output) throws IOException {
+	public static long copy(final InputStream input, final OutputStream output)
+			throws IOException {
 		return ByteStreams.copy(input, output);
 	}
 
 	public static BufferedReader toBufferedReader(final Reader reader) {
-		return reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
+		return reader instanceof BufferedReader ? (BufferedReader) reader
+				: new BufferedReader(reader);
 	}
+
 }

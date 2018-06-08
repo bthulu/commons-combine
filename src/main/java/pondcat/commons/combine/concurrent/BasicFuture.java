@@ -24,16 +24,19 @@ import java.util.concurrent.*;
 
 /**
  * 从Apache HttpClient 移植(2017.4)，一个Future实现类的基本框架.
- * 
+ *
  * https://github.com/apache/httpcomponents-core/blob/master/httpcore5/src/main/java/org/apache/hc/core5/concurrent/BasicFuture.java
- * 
+ *
  * 不过HC用的是callback，这里用的是继承
  */
 public abstract class BasicFuture<T> implements Future<T> {
 
-	private volatile boolean completed; //NOSONAR
+	private volatile boolean completed; // NOSONAR
+
 	private volatile boolean cancelled;
+
 	private volatile T result;
+
 	private volatile Exception ex;
 
 	@Override
@@ -63,14 +66,17 @@ public abstract class BasicFuture<T> implements Future<T> {
 		long waitTime = msecs;
 		if (this.completed) {
 			return getResult();
-		} else if (waitTime <= 0) {
+		}
+		else if (waitTime <= 0) {
 			throw new TimeoutException();
-		} else {
+		}
+		else {
 			for (;;) {
 				wait(waitTime);
 				if (this.completed) {
 					return getResult();
-				} else {
+				}
+				else {
 					waitTime = msecs - (System.currentTimeMillis() - startTime);
 					if (waitTime <= 0) {
 						throw new TimeoutException();
@@ -141,4 +147,5 @@ public abstract class BasicFuture<T> implements Future<T> {
 	protected abstract void onFailed(Exception ex);
 
 	protected abstract void onCancelled();
+
 }

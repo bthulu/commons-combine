@@ -36,21 +36,22 @@ import java.util.List;
  *
  * https://github.com/oblac/jodd/blob/master/jodd-core/src/main/java/jodd/util/Wildcard.java
  *
- * Checks whether a string or path matches a given wildcard pattern. Possible patterns allow to match single characters
- * ('?') or any count of characters ('*'). Wildcard characters can be escaped (by an '\'). When matching path, deep tree
- * wildcard also can be used ('**').
+ * Checks whether a string or path matches a given wildcard pattern. Possible patterns
+ * allow to match single characters ('?') or any count of characters ('*'). Wildcard
+ * characters can be escaped (by an '\'). When matching path, deep tree wildcard also can
+ * be used ('**').
  * <p>
- * This method uses recursive matching, as in linux or windows. regexp works the same. This method is very fast,
- * comparing to similar implementations.
+ * This method uses recursive matching, as in linux or windows. regexp works the same.
+ * This method is very fast, comparing to similar implementations.
  */
 public class WildcardMatcher {
 
 	/**
 	 * Checks whether a string matches a given wildcard pattern.
-	 *
 	 * @param string input string
 	 * @param pattern pattern to match
-	 * @return <code>true</code> if string matches the pattern, otherwise <code>false</code>
+	 * @return <code>true</code> if string matches the pattern, otherwise
+	 * <code>false</code>
 	 */
 	public static boolean match(CharSequence string, CharSequence pattern) {
 		return match(string, pattern, 0, 0);
@@ -59,7 +60,8 @@ public class WildcardMatcher {
 	/**
 	 * Internal matching recursive function.
 	 */
-	private static boolean match(CharSequence string, CharSequence pattern, final int sNdxConst, final int pNdxConst) {
+	private static boolean match(CharSequence string, CharSequence pattern,
+			final int sNdxConst, final int pNdxConst) {
 
 		int pLen = pattern.length();
 		if (pLen == 1) {
@@ -120,7 +122,8 @@ public class WildcardMatcher {
 					}
 					return false;
 				}
-			} else {
+			}
+			else {
 				nextIsNotWildcard = false;
 			}
 
@@ -138,7 +141,8 @@ public class WildcardMatcher {
 	// ---------------------------------------------------------------- utilities
 
 	/**
-	 * Matches string to at least one pattern. Returns index of matched pattern, or <code>-1</code> otherwise.
+	 * Matches string to at least one pattern. Returns index of matched pattern, or
+	 * <code>-1</code> otherwise.
 	 * @see #match(CharSequence, CharSequence)
 	 */
 	public static int matchOne(String src, String... patterns) {
@@ -153,10 +157,12 @@ public class WildcardMatcher {
 	// ---------------------------------------------------------------- path
 
 	protected static final String PATH_MATCH = "**";
+
 	protected static final Splitter PATH_SPLITTER = Splitter.on(CharMatcher.anyOf("/\\"));
 
 	/**
-	 * Matches path to at least one pattern. Returns index of matched pattern or <code>-1</code> otherwise.
+	 * Matches path to at least one pattern. Returns index of matched pattern or
+	 * <code>-1</code> otherwise.
 	 * @see #matchPath(String, String)
 	 */
 	public static int matchPathOne(String platformDependentPath, String... patterns) {
@@ -169,14 +175,15 @@ public class WildcardMatcher {
 	}
 
 	/**
-	 * Matches path against pattern using *, ? and ** wildcards. Both path and the pattern are tokenized on path
-	 * separators (both \ and /). '**' represents deep tree wildcard, as in Ant. The separator should match the
-	 * corresponding path
+	 * Matches path against pattern using *, ? and ** wildcards. Both path and the pattern
+	 * are tokenized on path separators (both \ and /). '**' represents deep tree
+	 * wildcard, as in Ant. The separator should match the corresponding path
 	 */
 	public static boolean matchPath(String path, String pattern) {
 		List<String> pathElements = PATH_SPLITTER.splitToList(path);
 		List<String> patternElements = PATH_SPLITTER.splitToList(pattern);
-		return matchTokens(pathElements.toArray(new String[0]), patternElements.toArray(new String[0]));
+		return matchTokens(pathElements.toArray(new String[0]),
+				patternElements.toArray(new String[0]));
 	}
 
 	/**
@@ -188,7 +195,8 @@ public class WildcardMatcher {
 		int tokNdxStart = 0;
 		int tokNdxEnd = tokens.length - 1;
 
-		while ((patNdxStart <= patNdxEnd) && (tokNdxStart <= tokNdxEnd)) { // find first **
+		while ((patNdxStart <= patNdxEnd) && (tokNdxStart <= tokNdxEnd)) { // find first
+																			// **
 			String patDir = patterns[patNdxStart];
 			if (patDir.equals(PATH_MATCH)) {
 				break;
@@ -211,7 +219,8 @@ public class WildcardMatcher {
 			return false; // string is not finished, but pattern is
 		}
 
-		while ((patNdxStart <= patNdxEnd) && (tokNdxStart <= tokNdxEnd)) { // to the last **
+		while ((patNdxStart <= patNdxEnd) && (tokNdxStart <= tokNdxEnd)) { // to the last
+																			// **
 			String patDir = patterns[patNdxEnd];
 			if (patDir.equals(PATH_MATCH)) {
 				break;
@@ -243,7 +252,8 @@ public class WildcardMatcher {
 				patNdxStart++; // skip **/** situation
 				continue;
 			}
-			// find the pattern between padIdxStart & padIdxTmp in str between strIdxStart & strIdxEnd
+			// find the pattern between padIdxStart & padIdxTmp in str between strIdxStart
+			// & strIdxEnd
 			int patLength = (patIdxTmp - patNdxStart - 1);
 			int strLength = (tokNdxEnd - tokNdxStart + 1);
 			int ndx = -1;
@@ -277,4 +287,5 @@ public class WildcardMatcher {
 
 		return true;
 	}
+
 }

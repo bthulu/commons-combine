@@ -105,8 +105,13 @@
                 </executions>
                 <configuration>
                     <doclint>reference</doclint>
-                    <!--<additionalparam>-Xdoclint:none</additionalparam>-->
+                    <!--<additionalparam>-Xdoclint:reference</additionalparam>-->
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.spring.javaformat</groupId>
+                <artifactId>spring-javaformat-maven-plugin</artifactId>
+                <version>0.0.3</version>
             </plugin>
         </plugins>
     </build>

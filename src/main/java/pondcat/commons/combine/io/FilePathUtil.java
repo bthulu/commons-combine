@@ -17,8 +17,10 @@ public class FilePathUtil {
 	 */
 	public static String normalizePath(String path) {
 		if (Platforms.FILE_PATH_SEPARATOR_CHAR == Platforms.WINDOWS_FILE_PATH_SEPARATOR_CHAR
-				&& StringUtils.indexOf(path, Platforms.LINUX_FILE_PATH_SEPARATOR_CHAR) != -1) {
-			return StringUtils.replaceChars(path, Platforms.LINUX_FILE_PATH_SEPARATOR_CHAR,
+				&& StringUtils.indexOf(path,
+						Platforms.LINUX_FILE_PATH_SEPARATOR_CHAR) != -1) {
+			return StringUtils.replaceChars(path,
+					Platforms.LINUX_FILE_PATH_SEPARATOR_CHAR,
 					Platforms.WINDOWS_FILE_PATH_SEPARATOR_CHAR);
 		}
 		return path;
@@ -43,13 +45,16 @@ public class FilePathUtil {
 		StringBuilder concatName = new StringBuilder();
 		if (StringUtil.endWith(baseName, Platforms.FILE_PATH_SEPARATOR_CHAR)) {
 			concatName.append(baseName).append(appendName[0]);
-		} else {
-			concatName.append(baseName).append(Platforms.FILE_PATH_SEPARATOR_CHAR).append(appendName[0]);
+		}
+		else {
+			concatName.append(baseName).append(Platforms.FILE_PATH_SEPARATOR_CHAR)
+					.append(appendName[0]);
 		}
 
 		if (appendName.length > 1) {
 			for (int i = 1; i < appendName.length; i++) {
-				concatName.append(Platforms.FILE_PATH_SEPARATOR_CHAR).append(appendName[i]);
+				concatName.append(Platforms.FILE_PATH_SEPARATOR_CHAR)
+						.append(appendName[i]);
 			}
 		}
 
@@ -71,7 +76,8 @@ public class FilePathUtil {
 		int idx = parentPath.lastIndexOf(Platforms.FILE_PATH_SEPARATOR_CHAR);
 		if (idx >= 0) {
 			parentPath = parentPath.substring(0, idx + 1);
-		} else {
+		}
+		else {
 			parentPath = Platforms.FILE_PATH_SEPARATOR;
 		}
 
@@ -84,4 +90,5 @@ public class FilePathUtil {
 	public static String getJarPath(Class<?> clazz) {
 		return clazz.getProtectionDomain().getCodeSource().getLocation().getFile();
 	}
+
 }

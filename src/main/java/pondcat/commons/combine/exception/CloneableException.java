@@ -2,18 +2,18 @@ package pondcat.commons.combine.exception;
 
 /**
  * 适用于异常信息需要变更的情况, 可通过clone()，不经过构造函数（也就避免了获得StackTrace）地从之前定义的静态异常中克隆，再设定新的异常信息
- * 
- * private static CloneableException TIMEOUT_EXCEPTION = new CloneableException("Timeout") .setStackTrace(My.class,
- * "hello"); ...
- * 
+ *
+ * private static CloneableException TIMEOUT_EXCEPTION = new CloneableException("Timeout")
+ * .setStackTrace(My.class, "hello"); ...
+ *
  * throw TIMEOUT_EXCEPTION.clone("Timeout for 40ms");
- * 
+ *
  */
 public class CloneableException extends RuntimeException implements Cloneable {
 
 	private static final long serialVersionUID = -6270471689928560417L;
-	
-	protected String message; //NOSONAR
+
+	protected String message; // NOSONAR
 
 	public CloneableException() {
 		super((Throwable) null);
@@ -30,10 +30,11 @@ public class CloneableException extends RuntimeException implements Cloneable {
 	}
 
 	@Override
-	public CloneableException clone() { //NOSONAR
+	public CloneableException clone() { // NOSONAR
 		try {
 			return (CloneableException) super.clone();
-		} catch (CloneNotSupportedException e) {// NOSONAR
+		}
+		catch (CloneNotSupportedException e) {// NOSONAR
 			return null;
 		}
 	}
@@ -67,4 +68,5 @@ public class CloneableException extends RuntimeException implements Cloneable {
 		this.message = message;
 		return this;
 	}
+
 }

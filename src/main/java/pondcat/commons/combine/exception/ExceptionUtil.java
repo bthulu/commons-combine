@@ -9,15 +9,15 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 /**
  * 关于异常的工具类.
- * 
+ *
  * 1. Checked/Uncheked及Wrap(如ExecutionException)的转换.
- * 
+ *
  * 2. 打印Exception的辅助函数. (其中一些来自Common Lang ExceptionUtils)
- * 
+ *
  * 3. 查找Cause(其中一些来自Guava Throwables)
- * 
+ *
  * 4. StackTrace性能优化相关，尽量使用静态异常避免异常生成时获取StackTrace(Netty)
- * 
+ *
  * @see CloneableException
  */
 public class ExceptionUtil {
@@ -26,7 +26,6 @@ public class ExceptionUtil {
 
 	/**
 	 * 将CheckedException包装为unchecked异常抛出, 减少函数签名中的CheckExcetpion定义.
-	 *
 	 * @param ex to cast
 	 * @return {@link UncheckedException}
 	 */
@@ -36,13 +35,12 @@ public class ExceptionUtil {
 	}
 
 	/**
-	 * 将CheckedException泛型伪装直接抛出, 减少函数签名中的CheckExcetpion定义.
-	 * 禁止在底层库中使用, 这里没有对入参异常做任何处理直接抛出, 如入参为受检异常, 抛出的依然是这个受检异常, 只是编译器不再提示要求处理.
-	 * 如在spring事物中调用此方法, 因spring事物默认不回滚受检异常, 很可能造成误解, 如需使用, 请务必确保受检异常时触发事物回滚, 如:
+	 * 将CheckedException泛型伪装直接抛出, 减少函数签名中的CheckExcetpion定义. 禁止在底层库中使用, 这里没有对入参异常做任何处理直接抛出,
+	 * 如入参为受检异常, 抛出的依然是这个受检异常, 只是编译器不再提示要求处理. 如在spring事物中调用此方法, 因spring事物默认不回滚受检异常,
+	 * 很可能造成误解, 如需使用, 请务必确保受检异常时触发事物回滚, 如:
 	 * <code>@Transactional(rollbackFor=Throwable.class)</code>或者<code>@Transaction</code>
-	 *
 	 * @param ex to cast
-	 * @param <T>       the type of the Throwable
+	 * @param <T> the type of the Throwable
 	 * @return 异常直接抛出, 无返回值
 	 * @throws T the throwable as an unchecked throwable
 	 */
@@ -53,13 +51,14 @@ public class ExceptionUtil {
 
 	/**
 	 * 如果是著名的包裹类，从cause中获得真正异常. 其他异常则不变.
-	 * 
+	 *
 	 * Future中使用的ExecutionException 与 反射时定义的InvocationTargetException， 真正的异常都封装在Cause中
-	 * 
+	 *
 	 * 前面 unchecked() 使用的UncheckedException同理.
 	 */
 	public static Throwable unwrap(@Nonnull Throwable t) {
-		if (t instanceof UncheckedException || t instanceof java.util.concurrent.ExecutionException
+		if (t instanceof UncheckedException
+				|| t instanceof java.util.concurrent.ExecutionException
 				|| t instanceof java.lang.reflect.InvocationTargetException
 				|| t instanceof UndeclaredThrowableException) {
 			return t.getCause();
@@ -72,12 +71,12 @@ public class ExceptionUtil {
 
 	/**
 	 * 将StackTrace[]转换为String, 供Logger或e.printStackTrace()外的其他地方使用.
-	 * 
+	 *
 	 * 为了使用StringBuilderWriter，没有用Throwables#getStackTraceAsString(Throwable)
 	 */
 	public static String getStackTrace(@Nonnull Throwable t) {
 		StringBuilderWriter stringWriter = new StringBuilderWriter();
-		t.printStackTrace(new PrintWriter(stringWriter)); //NOSONAR
+		t.printStackTrace(new PrintWriter(stringWriter)); // NOSONAR
 		return stringWriter.toString();
 	}
 
@@ -89,7 +88,8 @@ public class ExceptionUtil {
 	 * copy from Jodd ExceptionUtil
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Throwable> T findCause(@Nonnull Throwable throwable, Class<T> cause) {
+	public static <T extends Throwable> T findCause(@Nonnull Throwable throwable,
+			Class<T> cause) {
 		while (throwable != null) {
 			if (throwable.getClass().equals(cause)) {
 				return (T) throwable;
@@ -131,9 +131,10 @@ public class ExceptionUtil {
 	 * 		MyClass.class, "mymethod");
 	 * </pre>
 	 */
-	public static <T extends Throwable> T setStackTrace(@Nonnull T throwable, Class<?> throwClass, String throwClazz) {
-		throwable.setStackTrace(
-				new StackTraceElement[]{new StackTraceElement(throwClass.getName(), throwClazz, null, -1)});
+	public static <T extends Throwable> T setStackTrace(@Nonnull T throwable,
+			Class<?> throwClass, String throwClazz) {
+		throwable.setStackTrace(new StackTraceElement[] {
+				new StackTraceElement(throwClass.getName(), throwClazz, null, -1) });
 		return throwable;
 	}
 
@@ -152,4 +153,5 @@ public class ExceptionUtil {
 		}
 		return throwable;
 	}
+
 }

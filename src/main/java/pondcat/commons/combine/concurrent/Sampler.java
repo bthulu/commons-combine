@@ -6,15 +6,16 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 采样器
- * 
+ *
  * 移植 Twitter Common, 优化使用ThreadLocalRandom
- * 
+ *
  * https://github.com/twitter/commons/blob/master/src/java/com/twitter/common/util/Sampler.java
- * 
+ *
  */
 public class Sampler {
 
 	private static final Double ALWAYS = 100D;
+
 	private static final Double NEVER = 0D;
 
 	private double threshold;
@@ -38,9 +39,11 @@ public class Sampler {
 	public static Sampler create(Double selectPercent) {
 		if (selectPercent.equals(ALWAYS)) {
 			return new AlwaysSampler();
-		} else if (selectPercent.equals(NEVER)) {
+		}
+		else if (selectPercent.equals(NEVER)) {
 			return new NeverSampler();
-		} else {
+		}
+		else {
 			return new Sampler(selectPercent);
 		}
 	}
@@ -56,19 +59,24 @@ public class Sampler {
 	 * 采样率为100时，总是返回true
 	 */
 	protected static class AlwaysSampler extends Sampler {
+
 		@Override
 		public boolean select() {
 			return true;
 		}
+
 	}
 
 	/**
 	 * 采样率为0时，总是返回false
 	 */
 	protected static class NeverSampler extends Sampler {
+
 		@Override
 		public boolean select() {
 			return false;
 		}
+
 	}
+
 }

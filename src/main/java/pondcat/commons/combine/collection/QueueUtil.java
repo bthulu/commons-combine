@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Queue工具集.
- * 
+ *
  * 1. 各种Queue，Dequeue的创建
  *
  * 2. 特殊类型Queue:LIFO的Stack, LRU的Queue
@@ -20,7 +20,7 @@ public class QueueUtil {
 
 	/**
 	 * 创建ArrayDeque (JDK无ArrayQueue)
-	 * 
+	 *
 	 * 需设置初始长度，默认为16，数组满时成倍扩容
 	 */
 	public static <E> ArrayDeque<E> newArrayDeque(int initSize) {
@@ -50,7 +50,7 @@ public class QueueUtil {
 
 	/**
 	 * 创建并发阻塞情况下，长度不受限的队列.
-	 * 
+	 *
 	 * 长度不受限，即生产者不会因为满而阻塞，但消费者会因为空而阻塞.
 	 */
 	public static <E> LinkedBlockingQueue<E> newBlockingUnlimitQueue() {
@@ -59,7 +59,7 @@ public class QueueUtil {
 
 	/**
 	 * 创建并发阻塞情况下，长度不受限的双端队列.
-	 * 
+	 *
 	 * 长度不受限，即生产者不会因为满而阻塞，但消费者会因为空而阻塞.
 	 */
 	public static <E> LinkedBlockingDeque<E> newBlockingUnlimitDeque() {
@@ -108,7 +108,8 @@ public class QueueUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <E> Queue<E> newConcurrentStack() {
-		return (Queue<E>) Collections.asLifoQueue(QueueUtil.newConcurrentNonBlockingDeque());
+		return (Queue<E>) Collections
+				.asLifoQueue(QueueUtil.newConcurrentNonBlockingDeque());
 	}
 
 	//////////////// 特殊类型Queue：LRUQueue ///////////
@@ -120,4 +121,5 @@ public class QueueUtil {
 	public static <E> EvictingQueue<E> newLRUQueue(int maxSize) {
 		return EvictingQueue.create(maxSize);
 	}
+
 }
