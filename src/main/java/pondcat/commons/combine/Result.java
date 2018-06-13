@@ -6,21 +6,24 @@ package pondcat.commons.combine;
  */
 public class Result<T> {
 
-	public static final String STATUS_SUCCESS = "200"; // 接口调用成功
+	public static abstract class Status {
+		public static final String SUCCESS = "200"; // 接口调用成功
 
-	public static final String STATUS_SERVICE_FAILED = "400"; // 业务处理失败
+		public static final String SERVICE_FAILED = "400"; // 业务处理失败
 
-	public static final String STATUS_UNAUTHORIZED = "401"; // 授权权限不足
+		public static final String UNAUTHORIZED = "401"; // 授权权限不足
 
-	public static final String STATUS_FORBIDDEN = "403"; // 拒绝执行请求
+		public static final String FORBIDDEN = "403"; // 拒绝执行请求
 
-	public static final String STATUS_NOT_FOUND = "404"; // 请求资源无法找到
+		public static final String NOT_FOUND = "404"; // 请求资源无法找到
 
-	public static final String STATUS_SERVICE_UNAVAILABLE = "503"; // 服务不可用
+		public static final String SERVICE_UNAVAILABLE = "503"; // 服务不可用
 
-	public static final String STATUS_LACK_ARGUMENT = "4001"; // 缺少必选参数
+		public static final String LACK_ARGUMENT = "4001"; // 缺少必选参数
 
-	public static final String STATUS_ILLEGAL_ARGUMENT = "4002"; // 非法的参数
+		public static final String ILLEGAL_ARGUMENT = "4002"; // 非法的参数
+
+	}
 
 	private String status; // 业务处理状态
 
@@ -46,14 +49,14 @@ public class Result<T> {
 	}
 
 	public static <T> Result<T> ok(T data, String msg) {
-		Result<T> r = new Result<>(STATUS_SUCCESS);
+		Result<T> r = new Result<>(Status.SUCCESS);
 		r.setData(data);
 		r.setMsg(msg);
 		return r;
 	}
 
 	public static Result<Void> error(String msg) {
-		return error(STATUS_SERVICE_FAILED, msg);
+		return error(Status.SERVICE_FAILED, msg);
 	}
 
 	public static Result<Void> error(String status, String msg) {
@@ -70,10 +73,11 @@ public class Result<T> {
 	/**
 	 * get data without return code handled, any un-success will throw an
 	 * {@link ResultException}
+	 *
 	 * @return data
 	 */
 	public T data() {
-		if (STATUS_SUCCESS.equals(status)) {
+		if (Status.SUCCESS.equals(status)) {
 			return data;
 		}
 		throw new ResultException(status, msg, code);
@@ -84,7 +88,7 @@ public class Result<T> {
 		private static final Result<Void> OK = new ImmutableResult<>();
 
 		static {
-			OK.status = STATUS_SUCCESS;
+			OK.status = Status.SUCCESS;
 		}
 
 		public ImmutableResult() {
@@ -169,8 +173,7 @@ public class Result<T> {
 
 	@Override
 	public String toString() {
-		return "Result{" + "status='" + status + '\'' + ", code='" + code + '\''
-				+ ", data=" + data + ", msg='" + msg + '\'' + '}';
+		return "Result{" + "status='" + status + '\'' + ", code='" + code + '\'' + ", data=" + data + ", msg='" + msg
+				+ '\'' + '}';
 	}
-
 }
