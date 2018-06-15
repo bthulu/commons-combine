@@ -4,7 +4,7 @@ package pondcat.commons.combine;
  * 返回数据包装类, 其中返回码参考了http status的定义. 建议继承此类,
  * 重载{@link #ok(Object)}和{@link #ok(Object, String)}以支持分页
  */
-public class Result<T> {
+public class ApiResponse<T> {
 
 	public static abstract class Status {
 		public static final String SUCCESS = "200"; // 接口调用成功
@@ -33,65 +33,52 @@ public class Result<T> {
 
 	private String msg; // 额外的描述信息
 
-	private Result() {
+	private ApiResponse() {
 	}
 
-	private Result(String status) {
+	private ApiResponse(String status) {
 		this.status = status;
 	}
 
-	public static Result<Void> ok() {
-		return ImmutableResult.OK;
+	public static ApiResponse<Void> ok() {
+		return ImmutableApiResponse.OK;
 	}
 
-	public static <T> Result<T> ok(T data) {
+	public static <T> ApiResponse<T> ok(T data) {
 		return ok(data, null);
 	}
 
-	public static <T> Result<T> ok(T data, String msg) {
-		Result<T> r = new Result<>(Status.SUCCESS);
+	public static <T> ApiResponse<T> ok(T data, String msg) {
+		ApiResponse<T> r = new ApiResponse<>(Status.SUCCESS);
 		r.setData(data);
 		r.setMsg(msg);
 		return r;
 	}
 
-	public static Result<Void> error(String msg) {
+	public static ApiResponse<Void> error(String msg) {
 		return error(Status.SERVICE_FAILED, msg);
 	}
 
-	public static Result<Void> error(String status, String msg) {
-		Result<Void> r = new Result<>(status);
+	public static ApiResponse<Void> error(String status, String msg) {
+		ApiResponse<Void> r = new ApiResponse<>(status);
 		r.setMsg(msg);
 		return r;
 	}
 
-	public Result<T> code(String code) {
+	public ApiResponse<T> code(String code) {
 		setCode(code);
 		return this;
 	}
 
-	/**
-	 * get data without return code handled, any un-success will throw an
-	 * {@link ResultException}
-	 *
-	 * @return data
-	 */
-	public T data() {
-		if (Status.SUCCESS.equals(status)) {
-			return data;
-		}
-		throw new ResultException(status, msg, code);
-	}
+	public static class ImmutableApiResponse<T> extends ApiResponse<T> {
 
-	public static class ImmutableResult<T> extends Result<T> {
-
-		private static final Result<Void> OK = new ImmutableResult<>();
+		private static final ApiResponse<Void> OK = new ImmutableApiResponse<>();
 
 		static {
 			OK.status = Status.SUCCESS;
 		}
 
-		public ImmutableResult() {
+		public ImmutableApiResponse() {
 			super();
 		}
 
@@ -113,28 +100,6 @@ public class Result<T> {
 		@Override
 		public void setMsg(String msg) {
 			throw new UnsupportedOperationException();
-		}
-
-	}
-
-	public static class ResultException extends RuntimeException {
-
-		private final String status;
-
-		private String code;
-
-		public ResultException(String status, String message, String code) {
-			super(message);
-			this.status = status;
-			this.code = code;
-		}
-
-		public String getStatus() {
-			return status;
-		}
-
-		public String getCode() {
-			return code;
 		}
 
 	}
@@ -173,7 +138,7 @@ public class Result<T> {
 
 	@Override
 	public String toString() {
-		return "Result{" + "status='" + status + '\'' + ", code='" + code + '\'' + ", data=" + data + ", msg='" + msg
+		return "ApiResponse{" + "status='" + status + '\'' + ", code='" + code + '\'' + ", data=" + data + ", msg='" + msg
 				+ '\'' + '}';
 	}
 }
