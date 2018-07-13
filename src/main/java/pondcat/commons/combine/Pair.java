@@ -141,7 +141,7 @@ public abstract class Pair<L, R> {
 
 		private final R right;
 
-		private ImmutablePair(L l, R r) {
+		public ImmutablePair(L l, R r) {
 			this.left = l;
 			this.right = r;
 		}
@@ -192,11 +192,10 @@ public abstract class Pair<L, R> {
 
 		private R right;
 
-		private MutablePair() {
-			// supports json deserialize
+		public MutablePair() {
 		}
 
-		private MutablePair(L l, R r) {
+		public MutablePair(L l, R r) {
 			this.left = l;
 			this.right = r;
 		}
