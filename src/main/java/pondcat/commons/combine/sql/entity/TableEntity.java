@@ -2,14 +2,10 @@ package pondcat.commons.combine.sql.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 数据库表对应实体类的接口, 不提供抽象类, 方便实体类可能需要继承自别的类. 所有实体类必须implements本接口.
- *
- * <p>
- * 与{@link TableCreateBy}区别在于无createBy字段, 多用于用户表, 常量表, 配置表, 第三方回调记录表等不需要创建者或者无创建者的场合
- * </p>
- *
  * <p>
  * 用户表主键必须为unsigned bigint(可自增或非自增). 其他表主键:必需单主键id, 类型统一为unsigned
  * bigint(可自增或非自增)或者char(慎用, 需指定语言为latin1, 仅允许英文数字组合).
@@ -24,18 +20,40 @@ import java.time.LocalDateTime;
  * <div>布尔类型:强制为unsigned tinyint(1), 不要定义为bit(1), bit(1)实际占用的也是1个字节而不是1位,
  * 可参考mysql官网字段类型解释</div>
  */
-public interface TableEntity<T extends Serializable> {
+public abstract class TableEntity<T extends Serializable> {
+	private T id;
+	private LocalDateTime ctime;
 
-	T getId();
+	public T getId() {
+		return id;
+	}
 
-	void setId(T id);
+	public TableEntity<T> setId(T id) {
+		this.id = id;
+		return this;
+	}
 
-	LocalDateTime getCreateAt();
+	public LocalDateTime getCtime() {
+		return ctime;
+	}
 
-	void setCreateAt(LocalDateTime createAt);
+	public TableEntity<T> setCtime(LocalDateTime ctime) {
+		this.ctime = ctime;
+		return this;
+	}
 
-	LocalDateTime getUpdateAt();
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		TableEntity<?> that = (TableEntity<?>) o;
+		return Objects.equals(id, that.id);
+	}
 
-	void setUpdateAt(LocalDateTime updateAt);
-
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
 }
