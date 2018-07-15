@@ -1,5 +1,7 @@
 package bthulu.commons.combine;
 
+import bthulu.commons.combine.exception.ApiException;
+
 /**
  * 返回数据包装类, 其中返回码参考了http status的定义. 建议继承此类,
  * 重载{@link #ok(Object)}和{@link #ok(Object, String)}以支持分页
@@ -102,6 +104,17 @@ public class ApiResponse<T> {
 			throw new UnsupportedOperationException();
 		}
 
+	}
+
+	public boolean isOk() {
+		return Status.SUCCESS.equals(status);
+	}
+
+	public T data() {
+		if (isOk()) {
+			return getData();
+		}
+		throw new ApiException(status, msg, code);
 	}
 
 	public String getStatus() {

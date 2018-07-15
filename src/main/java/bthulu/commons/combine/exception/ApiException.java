@@ -5,17 +5,14 @@ public class ApiException extends RuntimeException {
 
     private final String code;
 
-    private final String responseBody;
-
-    public ApiException(String status, String message, String responseBody) {
-        this(status, message, responseBody, null);
+	public ApiException(String status, String message) {
+		this(status, message, null);
     }
 
-    public ApiException(String status, String message, String responseBody, String code) {
+	public ApiException(String status, String message, String code) {
         super(message);
         this.status = status;
         this.code = code;
-        this.responseBody = responseBody;
     }
 
     public String getStatus() {
@@ -26,7 +23,4 @@ public class ApiException extends RuntimeException {
         return code;
     }
 
-    public String getResponseBody() {
-        return responseBody;
-    }
 }
