@@ -4,6 +4,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -28,6 +29,14 @@ public class IOUtil {
 	}
 
 	/**
+	 * 简单读取InputStream到String.
+	 */
+	public static String toString(InputStream input, Charset cs) throws IOException {
+		InputStreamReader reader = new InputStreamReader(input, cs);
+		return toString(reader);
+	}
+
+	/**
 	 * 简单读取Reader到String
 	 *
 	 * @see CharStreams#toString
@@ -41,6 +50,13 @@ public class IOUtil {
 	 */
 	public static List<String> toLines(final InputStream input) throws IOException {
 		return toLines(new InputStreamReader(input, StandardCharsets.UTF_8));
+	}
+
+	/**
+	 * 简单读取Reader的每行内容到List<String>
+	 */
+	public static List<String> toLines(final InputStream input, Charset cs) throws IOException {
+		return toLines(new InputStreamReader(input, cs));
 	}
 
 	/**
@@ -59,6 +75,15 @@ public class IOUtil {
 			throws IOException {
 		if (data != null) {
 			output.write(data.getBytes(StandardCharsets.UTF_8));
+		}
+	}
+
+	/**
+	 * 简单写入String到OutputStream.
+	 */
+	public static void write(final String data, final OutputStream output, Charset cs) throws IOException {
+		if (data != null) {
+			output.write(data.getBytes(cs));
 		}
 	}
 
