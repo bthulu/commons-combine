@@ -5,7 +5,7 @@ import bthulu.commons.combine.exception.ExceptionUtil;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 import javax.annotation.Nonnull;
-import java.text.ParseException;
+import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -112,12 +112,51 @@ public abstract class DateFormatter {
 	 * <p>
 	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
 	 */
-	public static Date parseDate(@Nonnull String pattern, @Nonnull String text) {
+	public static Date parseDate(@Nonnull String pattern, @Nullable String text) {
+		return parseDate(pattern, text, false);
+	}
+
+	/**
+	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
+	 * <p>
+	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
+	 * <p>
+	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 */
+	public static Date parseDate(@Nonnull String pattern, @Nullable String text, boolean nullIfFailed) {
 		try {
+			if (text == null || text.isEmpty()) {return null;}
 			return FastDateFormat.getInstance(pattern).parse(text);
+		} catch (Exception e) {
+			return handleFailed(e, nullIfFailed);
 		}
-		catch (ParseException e) {
-			throw ExceptionUtil.unchecked(e);
+	}
+
+	/**
+	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
+	 * <p>
+	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
+	 * <p>
+	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 */
+	public static LocalDateTime parseLocalDateTime(@Nonnull String pattern, @Nullable String text) {
+		return parseLocalDateTime(pattern, text, false);
+	}
+
+	/**
+	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
+	 * <p>
+	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
+	 * <p>
+	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 */
+	public static LocalDateTime parseLocalDateTime(@Nonnull String pattern, @Nullable String text,
+			boolean nullIfFailed) {
+		try {
+			if (text == null || text.isEmpty()) {return null;}
+			return LocalDateTime.parse(text, getInstance(pattern));
+		} catch (Exception e) {
+			return handleFailed(e, nullIfFailed);
 		}
 	}
 
@@ -128,8 +167,8 @@ public abstract class DateFormatter {
 	 * <p>
 	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
 	 */
-	public static LocalDateTime parseLocalDateTime(@Nonnull String pattern, @Nonnull String text) {
-		return LocalDateTime.parse(text, getInstance(pattern));
+	public static LocalDate parseLocalDate(@Nonnull String pattern, @Nullable String text) {
+		return parseLocalDate(pattern, text, false);
 	}
 
 	/**
@@ -139,8 +178,13 @@ public abstract class DateFormatter {
 	 * <p>
 	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
 	 */
-	public static LocalDate parseLocalDate(@Nonnull String pattern, @Nonnull String text) {
-		return LocalDate.parse(text, getInstance(pattern));
+	public static LocalDate parseLocalDate(@Nonnull String pattern, @Nullable String text, boolean nullIfFailed) {
+		try {
+			if (text == null || text.isEmpty()) {return null;}
+			return LocalDate.parse(text, getInstance(pattern));
+		} catch (Exception e) {
+			return handleFailed(e, nullIfFailed);
+		}
 	}
 
 	/**
@@ -150,8 +194,24 @@ public abstract class DateFormatter {
 	 * <p>
 	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
 	 */
-	public static LocalTime parseLocalTime(@Nonnull String pattern, @Nonnull String text) {
-		return LocalTime.parse(text, getInstance(pattern));
+	public static LocalTime parseLocalTime(@Nonnull String pattern, @Nullable String text) {
+		return parseLocalTime(pattern, text, false);
+	}
+
+	/**
+	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
+	 * <p>
+	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
+	 * <p>
+	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 */
+	public static LocalTime parseLocalTime(@Nonnull String pattern, @Nullable String text, boolean nullIfFailed) {
+		try {
+			if (text == null || text.isEmpty()) {return null;}
+			return LocalTime.parse(text, getInstance(pattern));
+		} catch (Exception e) {
+			return handleFailed(e, nullIfFailed);
+		}
 	}
 
 	/**
@@ -161,7 +221,7 @@ public abstract class DateFormatter {
 	 * <p>
 	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
 	 */
-	public static String format(@Nonnull String pattern, @Nonnull Date date) {
+	public static String format(@Nonnull String pattern, @Nullable Date date) {
 		return FastDateFormat.getInstance(pattern).format(date);
 	}
 
@@ -195,4 +255,11 @@ public abstract class DateFormatter {
 		return formatter;
 	}
 
+	private static <T> T handleFailed(Exception e, boolean nullIfFailed) {
+		if (nullIfFailed) {
+			return null;
+		} else {
+			throw ExceptionUtil.unchecked(e);
+		}
+	}
 }

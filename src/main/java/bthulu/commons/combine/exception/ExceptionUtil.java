@@ -25,13 +25,14 @@ public class ExceptionUtil {
 	private static final StackTraceElement[] EMPTY_STACK_TRACE = new StackTraceElement[0];
 
 	/**
-	 * 将CheckedException包装为unchecked异常抛出, 减少函数签名中的CheckExcetpion定义.
+	 * 将CheckedException包装为unchecked异常, 减少函数签名中的CheckExcetpion定义.
 	 * @param ex to cast
 	 * @return {@link UncheckedException}
 	 */
 	@SuppressWarnings("unchecked")
 	public static RuntimeException unchecked(Throwable ex) {
-		throw new UncheckedException(ex);
+		if (ex instanceof RuntimeException) {return (RuntimeException) ex;}
+		return new UncheckedException(ex);
 	}
 
 	/**
