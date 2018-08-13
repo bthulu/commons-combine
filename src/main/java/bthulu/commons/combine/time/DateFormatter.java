@@ -6,11 +6,13 @@ import org.apache.commons.lang3.time.FastDateFormat;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQuery;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -95,7 +97,7 @@ public abstract class DateFormatter {
 	 */
 	public static final DateTimeFormatter DATE_MINUTE_JDK8 = DateTimeFormatter.ofPattern(ConstDatePattern.DATE_MINUTE);
 
-	private static final ConcurrentHashMap<String, DateTimeFormatter> CACHE = new ConcurrentHashMap<>(8);
+	private static final ConcurrentHashMap<String, DateTimeFormatter> CACHE = new ConcurrentHashMap<>(9);
 
 	static {
 		CACHE.put(ConstDatePattern.DEFAULT, DEFAULT_JDK8);
@@ -106,22 +108,21 @@ public abstract class DateFormatter {
 	}
 
 	/**
-	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
-	 * <p>
-	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
-	 * <p>
-	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @return 时间日期
 	 */
 	public static Date parseDate(@Nonnull String pattern, @Nullable String text) {
 		return parseDate(pattern, text, false);
 	}
 
 	/**
-	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
-	 * <p>
-	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
-	 * <p>
-	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
+	 * @return 时间日期
 	 */
 	public static Date parseDate(@Nonnull String pattern, @Nullable String text, boolean nullIfFailed) {
 		try {
@@ -133,82 +134,116 @@ public abstract class DateFormatter {
 	}
 
 	/**
-	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
-	 * <p>
-	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
-	 * <p>
-	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @return 时间日期
+	 */
+	public static Instant parseInstant(@Nonnull String pattern, @Nullable String text) {
+		return parseInstant(pattern, text, false);
+	}
+
+	/**
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
+	 * @return 时间日期
+	 */
+	public static Instant parseInstant(@Nonnull String pattern, @Nullable String text, boolean nullIfFailed) {
+		return parse(pattern, text, Instant::from, nullIfFailed);
+	}
+
+	/**
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @return 时间日期
 	 */
 	public static LocalDateTime parseLocalDateTime(@Nonnull String pattern, @Nullable String text) {
 		return parseLocalDateTime(pattern, text, false);
 	}
 
 	/**
-	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
-	 * <p>
-	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
-	 * <p>
-	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
+	 * @return 时间日期
 	 */
 	public static LocalDateTime parseLocalDateTime(@Nonnull String pattern, @Nullable String text,
 			boolean nullIfFailed) {
-		try {
-			if (text == null || text.isEmpty()) {return null;}
-			return LocalDateTime.parse(text, getInstance(pattern));
-		} catch (Exception e) {
-			return handleFailed(e, nullIfFailed);
-		}
+		return parse(pattern, text, LocalDateTime::from, nullIfFailed);
 	}
 
 	/**
-	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
-	 * <p>
-	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
-	 * <p>
-	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @return 时间日期
 	 */
 	public static LocalDate parseLocalDate(@Nonnull String pattern, @Nullable String text) {
 		return parseLocalDate(pattern, text, false);
 	}
 
 	/**
-	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
-	 * <p>
-	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
-	 * <p>
-	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
+	 * @return 时间日期
 	 */
 	public static LocalDate parseLocalDate(@Nonnull String pattern, @Nullable String text, boolean nullIfFailed) {
-		try {
-			if (text == null || text.isEmpty()) {return null;}
-			return LocalDate.parse(text, getInstance(pattern));
-		} catch (Exception e) {
-			return handleFailed(e, nullIfFailed);
-		}
+		return parse(pattern, text, LocalDate::from, nullIfFailed);
 	}
 
 	/**
-	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
-	 * <p>
-	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
-	 * <p>
-	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @return 时间日期
 	 */
 	public static LocalTime parseLocalTime(@Nonnull String pattern, @Nullable String text) {
 		return parseLocalTime(pattern, text, false);
 	}
 
 	/**
-	 * 转换日期字符串为日期, 仅用于pattern不固定的情况.
-	 * <p>
-	 * 否则直接使用DateFormats中封装好的FastDateFormat/DateTimeFormatter.
-	 * <p>
-	 * FastDateFormat.getInstance()已经做了缓存，不会每次创建对象，但直接使用对象仍然能减少在缓存中的查找.
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
+	 * @return 时间日期
 	 */
 	public static LocalTime parseLocalTime(@Nonnull String pattern, @Nullable String text, boolean nullIfFailed) {
+		return parse(pattern, text, LocalTime::from, nullIfFailed);
+	}
+
+	/**
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param query 时间日期类型转换, {@link LocalDateTime#from(TemporalAccessor)}, {@link Instant#from(TemporalAccessor)}...
+	 * @param <T> 目标时间日期类型
+	 * @return 时间日期
+	 */
+	public static <T> T parse(@Nonnull String pattern, @Nullable String text, TemporalQuery<T> query) {
+		return parse(pattern, text, query, false);
+	}
+
+	/**
+	 * 转换时间日期字符串为时间日期
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param query 时间日期类型转换, {@link LocalDateTime#from(TemporalAccessor)}, {@link Instant#from(TemporalAccessor)}...
+	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
+	 * @param <T> 目标时间日期类型
+	 * @return 时间日期
+	 */
+	public static <T> T parse(@Nonnull String pattern, @Nullable String text, TemporalQuery<T> query,
+			boolean nullIfFailed) {
 		try {
 			if (text == null || text.isEmpty()) {return null;}
-			return LocalTime.parse(text, getInstance(pattern));
+			return getInstance(pattern).parse(text, query);
 		} catch (Exception e) {
 			return handleFailed(e, nullIfFailed);
 		}
