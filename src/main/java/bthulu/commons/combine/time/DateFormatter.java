@@ -224,6 +224,18 @@ public abstract class DateFormatter {
 	 * @param pattern 时间日期格式
 	 * @param text 待转换字符串
 	 * @param type 目标时间日期类型对应的type或class
+	 * @param <T> 目标时间日期类型
+	 * @return 时间日期
+	 */
+	public static <T> T parse(@Nonnull String pattern, @Nullable String text, @Nonnull Type type) {
+		return parse(pattern, text, type, false);
+	}
+
+	/**
+	 * 转换时间日期字符串为指定时间日期类型, 目前仅支持LocalDateTime,LocalDate,LocalTime,Instant,Date, 其余类型抛异常UnsupportedOperationException
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param type 目标时间日期类型对应的type或class
 	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
 	 * @param <T> 目标时间日期类型
 	 * @return 时间日期
@@ -244,6 +256,18 @@ public abstract class DateFormatter {
 		} else {
 			throw new UnsupportedOperationException();
 		}
+	}
+
+	/**
+	 * 转换时间日期字符串为指定时间日期类型, 目前仅支持LocalDateTime,LocalDate,LocalTime,Instant,Date, 其余类型抛异常UnsupportedOperationException
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param tClass 目标时间日期类型对应的type或class
+	 * @param <T> 目标时间日期类型
+	 * @return 时间日期
+	 */
+	public static <T> T parse(@Nonnull String pattern, @Nullable String text, @Nonnull Class<T> tClass) {
+		return parse(pattern, text, tClass, false);
 	}
 
 	/**
