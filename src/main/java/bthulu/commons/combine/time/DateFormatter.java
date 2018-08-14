@@ -6,6 +6,7 @@ import org.apache.commons.lang3.time.FastDateFormat;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -216,6 +217,47 @@ public abstract class DateFormatter {
 	 */
 	public static LocalTime parseLocalTime(@Nonnull String pattern, @Nullable String text, boolean nullIfFailed) {
 		return parse(pattern, text, LocalTime::from, nullIfFailed);
+	}
+
+	/**
+	 * 转换时间日期字符串为指定时间日期类型, 目前仅支持LocalDateTime,LocalDate,LocalTime,Instant,Date, 其余类型抛异常UnsupportedOperationException
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param type 目标时间日期类型对应的type或class
+	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
+	 * @param <T> 目标时间日期类型
+	 * @return 时间日期
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T parse(@Nonnull String pattern, @Nullable String text, @Nonnull Type type,
+			boolean nullIfFailed) {
+		if (type == LocalDateTime.class) {
+			return (T) parseLocalDateTime(pattern, text, nullIfFailed);
+		} else if (type == Date.class) {
+			return (T) parseDate(pattern, text, nullIfFailed);
+		} else if (type == LocalDate.class) {
+			return (T) parseLocalDate(pattern, text, nullIfFailed);
+		} else if (type == Instant.class) {
+			return (T) parseInstant(pattern, text, nullIfFailed);
+		} else if (type == LocalTime.class) {
+			return (T) parseLocalTime(pattern, text, nullIfFailed);
+		} else {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	/**
+	 * 转换时间日期字符串为指定时间日期类型, 目前仅支持LocalDateTime,LocalDate,LocalTime,Instant,Date, 其余类型抛异常UnsupportedOperationException
+	 * @param pattern 时间日期格式
+	 * @param text 待转换字符串
+	 * @param tClass 目标时间日期类型对应的type或class
+	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
+	 * @param <T> 目标时间日期类型
+	 * @return 时间日期
+	 */
+	public static <T> T parse(@Nonnull String pattern, @Nullable String text, @Nonnull Class<T> tClass,
+			boolean nullIfFailed) {
+		return parse(pattern, text, tClass, nullIfFailed);
 	}
 
 	/**
