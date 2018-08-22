@@ -2,6 +2,7 @@ package bthulu.commons.combine.sql.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 数据库表对应实体类的接口, 不提供抽象类, 方便实体类可能需要继承自别的类. 所有实体类必须implements本接口.
@@ -12,20 +13,42 @@ import java.time.LocalDateTime;
  * </p>
  *
  * <p>
- * createAt和updateAt限定日期类型为LocalDateTime, 可由数据库设默认值自行维护. 其他日期字段推荐使用{@link LocalDateTime},
+ * 创建时间和更新时间字段限定日期类型为LocalDateTime, 可由数据库设默认值自行维护. 其他日期字段推荐使用{@link LocalDateTime},
  * {@link java.time.LocalDate}, {@link java.time.LocalTime}, 尽量不要用{@link java.util.Date}
  * </p>
  *
- * <div>布尔类型:强制为unsigned tinyint(1), 不要定义为bit(1), bit(1)实际占用的也是1个字节而不是1位,
+ * <div>布尔类型:mysql中强制为unsigned tinyint(1), 不要定义为bit(1), bit(1)实际占用的也是1个字节而不是1位,
  * 可参考mysql官网字段类型解释</div>
  */
-public interface TableBasic<T extends Serializable> {
+public interface TableBasic<ID extends Serializable> {
 
-	T getId();
+	ID getId();
 
-	void setId(T id);
+	void setId(ID id);
 
 	LocalDateTime getCtime();
 
 	void setCtime(LocalDateTime ctime);
+
+	/**
+	 * 以id检验是否相等
+	 * @param o 待校验对象
+	 * @return 是否相等
+	 */
+	default boolean equals0(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof TableBasic))
+			return false;
+		TableBasic<?> that = (TableBasic<?>) o;
+		return Objects.equals(getId(), that.getId());
+	}
+
+	/**
+	 * 以id生成hashcode
+	 * @return hashcode
+	 */
+	default int hashCode0() {
+		return Objects.hash(getId());
+	}
 }
