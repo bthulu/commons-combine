@@ -7,28 +7,28 @@ import java.util.Collections;
  * 分页结果, 仅含必要的返回信息
  * @author gejian at 2018/8/25 14:56
  */
-public class PageResult<T> {
-	private Collection<T> content = Collections.emptyList();
+public class PageResult<E> {
+	private Collection<E> rows = Collections.emptyList();
 	private long total;
 
 	public PageResult() {
 	}
 
-	public PageResult(Collection<T> content) {
-		this.content = content;
+	public PageResult(Collection<E> rows) {
+		this.rows = rows;
 	}
 
-	public PageResult(Collection<T> content, long total) {
-		this.content = content;
+	public PageResult(Collection<E> rows, long total) {
+		this.rows = rows;
 		this.total = total;
 	}
 
-	public Collection<T> getContent() {
-		return content;
+	public Collection<E> getRows() {
+		return rows;
 	}
 
-	public void setContent(Collection<T> content) {
-		this.content = content;
+	public void setRows(Collection<E> rows) {
+		this.rows = rows;
 	}
 
 	public long getTotal() {
@@ -41,6 +41,6 @@ public class PageResult<T> {
 
 	@Override
 	public String toString() {
-		return "PageResult{" + "content=" + content + ", total=" + total + '}';
+		return "PageResult{" + "rows=" + rows + ", total=" + total + '}';
 	}
 }
