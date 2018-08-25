@@ -5,7 +5,7 @@ package bthulu.commons.combine.page;
  * 建议项目中继承此类, 同时增加以下实例方法:
  *   toPage(boolean count)方法, 与具体分页插件接受参数类相互转换
  */
-public class PageRequest<T> {
+public class PageRequest {
 
 	private static final int MAX_PAGE_SIZE_DEFAULT = 25;
 	private int pageNo = 1;
