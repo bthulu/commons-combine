@@ -10,7 +10,18 @@ import java.util.Collections;
 public class PageResult<T> {
 	private Collection<T> content = Collections.emptyList();
 	private long total;
-	private int pageNo;
+
+	public PageResult() {
+	}
+
+	public PageResult(Collection<T> content) {
+		this.content = content;
+	}
+
+	public PageResult(Collection<T> content, long total) {
+		this.content = content;
+		this.total = total;
+	}
 
 	public Collection<T> getContent() {
 		return content;
@@ -28,16 +39,8 @@ public class PageResult<T> {
 		this.total = total;
 	}
 
-	public int getPageNo() {
-		return pageNo;
-	}
-
-	public void setPageNo(int pageNo) {
-		this.pageNo = pageNo;
-	}
-
 	@Override
 	public String toString() {
-		return "PageResult{" + "content=" + content + ", total=" + total + ", pageNo=" + pageNo + '}';
+		return "PageResult{" + "content=" + content + ", total=" + total + '}';
 	}
 }
