@@ -57,12 +57,12 @@ public class ApiResponse<T> {
 		return r;
 	}
 
-	public static ApiResponse<Void> error(String msg) {
+	public static <T> ApiResponse<T> error(String msg) {
 		return error(Status.SERVICE_FAILED, msg);
 	}
 
-	public static ApiResponse<Void> error(String status, String msg) {
-		ApiResponse<Void> r = new ApiResponse<>(status);
+	public static <T> ApiResponse<T> error(String status, String msg) {
+		ApiResponse<T> r = new ApiResponse<>(status);
 		r.setMsg(msg);
 		return r;
 	}
