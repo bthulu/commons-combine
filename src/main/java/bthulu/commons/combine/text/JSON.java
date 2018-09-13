@@ -14,6 +14,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -79,6 +81,10 @@ public class JSON {
 
 	public static <T> T parseObject(byte[] content, TypeReference type) {
 		return readValue(content, type);
+	}
+
+	public static <T> List<T> parseArray(String text, Class<T[]> clazz) {
+		return Arrays.asList(readValue(text, clazz));
 	}
 
 	public static String toJSONString(Object object) {

@@ -133,9 +133,9 @@ public class ExceptionUtil {
 	 * </pre>
 	 */
 	public static <T extends Throwable> T setStackTrace(@Nonnull T throwable,
-			Class<?> throwClass, String throwClazz) {
+			Class<?> throwClass, String throwMethod) {
 		throwable.setStackTrace(new StackTraceElement[] {
-				new StackTraceElement(throwClass.getName(), throwClazz, null, -1) });
+				new StackTraceElement(throwClass.getName(), throwMethod, null, -1) });
 		return throwable;
 	}
 
