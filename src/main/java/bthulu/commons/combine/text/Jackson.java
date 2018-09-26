@@ -21,13 +21,13 @@ import java.util.TimeZone;
 /**
  * @author gejian at 2018/9/1 10:01
  */
-public class JSON {
+public class Jackson {
 
 	private static volatile ObjectMapper mapper;
 
 	public static ObjectMapper getMapper() {
 		if (mapper == null) {
-			synchronized (JSON.class) {
+			synchronized (Jackson.class) {
 				if (mapper == null) {
 					ObjectMapper mp = new ObjectMapper();
 					mp.setTimeZone(TimeZone.getDefault());
@@ -50,7 +50,7 @@ public class JSON {
 	}
 
 	public static void setMapper(ObjectMapper mapper) {
-		JSON.mapper = mapper;
+		Jackson.mapper = mapper;
 	}
 
 	// API like fastjson
@@ -95,7 +95,7 @@ public class JSON {
 		return writeValueAsBytes(object);
 	}
 
-	// mapping from JSON to Java types
+	// mapping from json to Java types
 
 	public static JsonNode readTree(InputStream in) {
 		try {
