@@ -10,7 +10,7 @@ import java.util.*;
  * 因commons-lang3的{@link org.apache.commons.lang3.tuple.Pair}继承自Entry, 会导致序列化行为与map类似,
  * 故予以改写. 对需返回三个变量的, 请使用{@link org.apache.commons.lang3.tuple.Triple}.
  */
-public abstract class Pair<K, V> {
+public class Pair<K, V> {
 
 	/**
 	 * <p>
@@ -23,7 +23,7 @@ public abstract class Pair<K, V> {
 	 * @return a keyvalue formed from the two parameters, not null
 	 */
 	public static <K, V> Pair<K, V> of(final K k, final V v) {
-		return new MutablePair<>(k, v);
+		return new Pair<>(k, v);
 	}
 
 	/**
@@ -38,40 +38,50 @@ public abstract class Pair<K, V> {
 	 * @return a keyvalue formed from the two parameters, not null
 	 */
 	public static <K, V> Pair<K, V> of(final K k, final V v, final boolean mutable) {
-		return mutable ? new MutablePair<>(k, v) : new ImmutablePair<>(k, v);
+		return mutable ? new Pair<>(k, v) : new ImmutablePair<>(k, v);
 	}
 
-	/**
-	 * <p>
-	 * Gets the key
-	 * </p>
-	 * @return the key, maybe null
-	 */
-	public abstract K getK();
+	public Pair() {
+	}
 
-	/**
-	 * <p>
-	 * Sets the key
-	 * </p>
-	 * @param k the key
-	 */
-	public abstract void setK(K k);
+	public Pair(K k, V v) {
+		this.k = k;
+		this.v = v;
+	}
 
-	/**
-	 * <p>
-	 * Gets the value
-	 * </p>
-	 * @return the value, maybe null
-	 */
-	public abstract V getV();
+	private K k;
 
-	/**
-	 * <p>
-	 * Sets the value
-	 * </p>
-	 * @param v the value
-	 */
-	public abstract void setV(V v);
+	private V v;
+
+	public K getK() {
+		return k;
+	}
+
+	public void setK(K k) {
+		this.k = k;
+	}
+
+	public V getV() {
+		return v;
+	}
+
+	public void setV(V v) {
+		this.v = v;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Pair<?, ?> pair = (Pair<?, ?>) o;
+		return Objects.equals(k, pair.k) &&
+				Objects.equals(v, pair.v);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(k, v);
+	}
 
 	/**
 	 * <p>
@@ -173,60 +183,6 @@ public abstract class Pair<K, V> {
 			}
 			if (o instanceof ImmutablePair) {
 				ImmutablePair that = (ImmutablePair) o;
-				return Objects.equals(k, that.k)
-						&& Objects.equals(v, that.v);
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(k, v);
-		}
-
-	}
-
-	public static final class MutablePair<K, V> extends Pair<K, V> {
-
-		private K k;
-
-		private V v;
-
-		public MutablePair() {
-		}
-
-		public MutablePair(K k, V v) {
-			this.k = k;
-			this.v = v;
-		}
-
-		@Override
-		public K getK() {
-			return k;
-		}
-
-		@Override
-		public void setK(K k) {
-			this.k = k;
-		}
-
-		@Override
-		public V getV() {
-			return v;
-		}
-
-		@Override
-		public void setV(V v) {
-			this.v = v;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (o instanceof MutablePair) {
-				MutablePair that = (MutablePair) o;
 				return Objects.equals(k, that.k)
 						&& Objects.equals(v, that.v);
 			}
