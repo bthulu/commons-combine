@@ -5,7 +5,7 @@ import bthulu.commons.combine.exception.ExceptionUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -103,4 +103,31 @@ public abstract class BeanUtil {
 		return copyProperties(source, target);
 	}
 
+	/**
+	 *
+	 * 从source拷贝名称类型相同的属性至clazz的无参构造函数构造的对象, 并返回这个对象列表.
+	 * 性能较{@link #copyProperties(Object, Object)}弱, 建议仅在无public构造函数时使用. 注意:
+	 * clazz必须有无参构造函数, 否则抛异常.
+	 * @param source 源集合
+	 * @param clazz 目标所属类
+	 * @return clazz的无参构造构造的对象, 属性同source
+	 */
+	public static <S, T> List<T> copyProperties(Collection<S> source, Class<T> clazz) {
+		if (source == null) {
+			return Collections.emptyList();
+		}
+		Constructor<T> constructor;
+		try {
+			constructor = clazz.getDeclaredConstructor();
+			constructor.setAccessible(true);
+			List<T> list = new ArrayList<>();
+			for (S s : source) {
+				list.add(copyProperties(s, constructor.newInstance()));
+			}
+			return list;
+		}
+		catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+			throw ExceptionUtil.unchecked(e);
+		}
+	}
 }
