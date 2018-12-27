@@ -1,12 +1,10 @@
 package bthulu.commons.combine.reflect;
 
 import bthulu.commons.combine.Pair;
-import bthulu.commons.combine.exception.ExceptionUtil;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 /**
  * 实现深度的BeanOfClasssA<->BeanOfClassB复制, 仅复制名字, 类型相同的字段. 不要是用Apache Common
@@ -60,13 +58,14 @@ public abstract class BeanUtil {
 	}
 
 	/**
-	 * 从source拷贝名称类型相同的属性至target, 并返回target. 性能是apache
+	 * 从source拷贝名称类型相同的属性至supplier.get()对象并返回. 性能是apache
 	 * commons或spring的BeanUtils#copyProperties的30倍以上.
 	 * @param source 源
-	 * @param target 目标
-	 * @return target, 属性同source
+	 * @param supplier 目标提供者
+	 * @return supplier.get()对象, 属性同source
 	 */
-	public static <S, T> T copyProperties(S source, T target) {
+	public static <S, T> T copyProperties(S source, Supplier<T> supplier) {
+		T target = supplier.get();
 		if (BeanCopierHolder.copierType == 1) {
 			org.springframework.cglib.beans.BeanCopier copier = (org.springframework.cglib.beans.BeanCopier) create(
 					source.getClass(), target.getClass());
@@ -81,53 +80,21 @@ public abstract class BeanUtil {
 	}
 
 	/**
-	 *
-	 * 从source拷贝名称类型相同的属性至clazz的无参构造函数构造的对象, 并返回这个对象.
-	 * 性能较{@link #copyProperties(Object, Object)}弱, 建议仅在无public构造函数时使用. 注意:
-	 * clazz必须有无参构造函数, 否则抛异常.
-	 * @param source 源
-	 * @param clazz 目标所属类
-	 * @return clazz的无参构造构造的对象, 属性同source
+	 * 批量拷贝名称类型相同的属性至supplier.get()对象并返回. 性能是apache
+	 * commons或spring的BeanUtils#copyProperties的30倍以上.
+	 * @param sources 源集合
+	 * @param supplier 目标提供者
+	 * @return supplier.get()对象, 属性同source
 	 */
-	public static <S, T> T copyProperties(S source, Class<T> clazz) {
-		T target;
-		try {
-			Constructor<T> constructor = clazz.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			target = constructor.newInstance();
-		}
-		catch (NoSuchMethodException | InstantiationException | IllegalAccessException
-				| InvocationTargetException e) {
-			throw ExceptionUtil.unchecked(e);
-		}
-		return copyProperties(source, target);
-	}
-
-	/**
-	 *
-	 * 从source拷贝名称类型相同的属性至clazz的无参构造函数构造的对象, 并返回这个对象列表.
-	 * 性能较{@link #copyProperties(Object, Object)}弱, 建议仅在无public构造函数时使用. 注意:
-	 * clazz必须有无参构造函数, 否则抛异常.
-	 * @param source 源集合
-	 * @param clazz 目标所属类
-	 * @return clazz的无参构造构造的对象, 属性同source
-	 */
-	public static <S, T> List<T> copyProperties(Collection<S> source, Class<T> clazz) {
-		if (source == null) {
+	public static <S, T> List<T> copyProperties(Collection<S> sources, Supplier<T> supplier) {
+		if (sources == null) {
 			return Collections.emptyList();
 		}
-		Constructor<T> constructor;
-		try {
-			constructor = clazz.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			List<T> list = new ArrayList<>();
-			for (S s : source) {
-				list.add(copyProperties(s, constructor.newInstance()));
-			}
-			return list;
+		List<T> list = new ArrayList<>();
+		for (S s : sources) {
+			list.add(copyProperties(s, supplier));
 		}
-		catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw ExceptionUtil.unchecked(e);
-		}
+		return list;
 	}
+
 }
