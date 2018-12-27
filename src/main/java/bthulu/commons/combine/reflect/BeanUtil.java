@@ -1,7 +1,5 @@
 package bthulu.commons.combine.reflect;
 
-import bthulu.commons.combine.Pair;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -14,7 +12,7 @@ public abstract class BeanUtil {
 
 	private static final class BeanCopierHolder {
 
-		private static final Map<Pair, Object> CACHE = new ConcurrentHashMap<>();
+		private static final Map<String, Object> CACHE = new ConcurrentHashMap<>();
 
 		private static byte copierType = 0;
 
@@ -35,13 +33,12 @@ public abstract class BeanUtil {
 
 	}
 
-	private static Object create(Class source, Class target) {
-		Pair key = Pair.of(source, target);
+	private static Object getBeanCopier(Class source, Class target) {
+		String key = source.getName() + '-' + target.getCanonicalName();
 		Object copier = BeanCopierHolder.CACHE.get(key);
 		if (copier == null) {
 			if (BeanCopierHolder.copierType == 1) {
-				copier = org.springframework.cglib.beans.BeanCopier.create(source, target,
-						false);
+				copier = org.springframework.cglib.beans.BeanCopier.create(source, target, false);
 			}
 			else if (BeanCopierHolder.copierType == 2) {
 				copier = net.sf.cglib.beans.BeanCopier.create(source, target, false);
@@ -66,12 +63,12 @@ public abstract class BeanUtil {
 	 */
 	public static <S, T> T copyProperties(S source, T target) {
 		if (BeanCopierHolder.copierType == 1) {
-			org.springframework.cglib.beans.BeanCopier copier = (org.springframework.cglib.beans.BeanCopier) create(
+			org.springframework.cglib.beans.BeanCopier copier = (org.springframework.cglib.beans.BeanCopier) getBeanCopier(
 					source.getClass(), target.getClass());
 			copier.copy(source, target, null);
 		}
 		else {
-			net.sf.cglib.beans.BeanCopier copier = (net.sf.cglib.beans.BeanCopier) create(
+			net.sf.cglib.beans.BeanCopier copier = (net.sf.cglib.beans.BeanCopier) getBeanCopier(
 					source.getClass(), target.getClass());
 			copier.copy(source, target, null);
 		}
