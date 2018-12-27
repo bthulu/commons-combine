@@ -58,14 +58,13 @@ public abstract class BeanUtil {
 	}
 
 	/**
-	 * 从source拷贝名称类型相同的属性至supplier.get()对象并返回. 性能是apache
+	 * 从source拷贝名称类型相同的属性至target对象并返回. 性能是apache
 	 * commons或spring的BeanUtils#copyProperties的30倍以上.
 	 * @param source 源
-	 * @param supplier 目标提供者
-	 * @return supplier.get()对象, 属性同source
+	 * @param target 目标对象
+	 * @return 目标对象, 属性同source
 	 */
-	public static <S, T> T copyProperties(S source, Supplier<T> supplier) {
-		T target = supplier.get();
+	public static <S, T> T copyProperties(S source, T target) {
 		if (BeanCopierHolder.copierType == 1) {
 			org.springframework.cglib.beans.BeanCopier copier = (org.springframework.cglib.beans.BeanCopier) create(
 					source.getClass(), target.getClass());
@@ -77,6 +76,17 @@ public abstract class BeanUtil {
 			copier.copy(source, target, null);
 		}
 		return target;
+	}
+
+	/**
+	 * 从source拷贝名称类型相同的属性至supplier.get()对象并返回. 性能是apache
+	 * commons或spring的BeanUtils#copyProperties的30倍以上.
+	 * @param source 源
+	 * @param supplier 目标提供者
+	 * @return supplier.get()对象, 属性同source
+	 */
+	public static <S, T> T copyProperties(S source, Supplier<T> supplier) {
+		return copyProperties(source, supplier.get());
 	}
 
 	/**
