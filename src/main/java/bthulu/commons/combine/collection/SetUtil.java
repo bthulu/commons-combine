@@ -60,4 +60,18 @@ public class SetUtil {
 		return (set & i) != 0;
 	}
 
+	/**
+	 * 对新旧数据进行对比, 得出新增数据, 共有数据, 及已删除数据
+	 * @param old 旧数据
+	 * @param now 新数据
+	 * @param <E> 数据类型
+	 * @return 数组, 依次为新增数据, 共有数据, 已删除数据
+	 */
+	@SuppressWarnings("unchecked")
+	public static <E> Set<E>[] compare(Set<E> old, Set<E> now) {
+		Sets.SetView<E> updates = Sets.intersection(old, now);
+		Sets.SetView<E> inserts = Sets.difference(now, old);
+		Sets.SetView<E> deletes = Sets.difference(old, now);
+		return new Set[]{inserts, updates, deletes};
+	}
 }
