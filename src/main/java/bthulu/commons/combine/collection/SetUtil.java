@@ -3,8 +3,8 @@ package bthulu.commons.combine.collection;
 import com.google.common.collect.Sets;
 import com.google.common.math.IntMath;
 
-import java.util.Collections;
-import java.util.Set;
+import javax.annotation.Nonnull;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -68,10 +68,25 @@ public class SetUtil {
 	 * @return 数组, 依次为新增数据, 共有数据, 已删除数据
 	 */
 	@SuppressWarnings("unchecked")
-	public static <E> Set<E>[] compare(Set<E> old, Set<E> now) {
-		Sets.SetView<E> updates = Sets.intersection(old, now);
-		Sets.SetView<E> inserts = Sets.difference(now, old);
-		Sets.SetView<E> deletes = Sets.difference(old, now);
-		return new Set[]{inserts, updates, deletes};
+	public static @Nonnull <E> List<E>[] compare(@Nonnull Set<E> old, @Nonnull Set<E> now) {
+		List<E> inserts = new ArrayList<>();
+		List<E> updates = new ArrayList<>();
+		List<E> deletes = new ArrayList<>();
+		for (E o : old) {
+			// 新的包含旧的, 为共有数据
+			if (now.contains(o)) {
+				updates.add(o);
+				continue;
+			}
+			// 新的不含旧的, 为已删除数据
+			deletes.add(o);
+		}
+		for (E n : now) {
+			// 旧的不含新的, 为新增数据
+			if (!old.contains(n)) {
+				inserts.add(n);
+			}
+		}
+		return new List[]{inserts, updates, deletes};
 	}
 }
