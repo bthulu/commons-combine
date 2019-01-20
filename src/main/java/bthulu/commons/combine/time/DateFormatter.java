@@ -71,13 +71,6 @@ public abstract class DateFormatter {
 	public static final DateTimeFormatter DEFAULT_JDK8 = DateTimeFormatter.ofPattern(ConstDatePattern.DEFAULT);
 
 	/**
-	 * pattern:yyyy-MM-dd
-	 *
-	 * @see ConstDatePattern#DATE
-	 */
-	public static final DateTimeFormatter DATE_JDK8 = DateTimeFormatter.ofPattern(ConstDatePattern.DATE);
-
-	/**
 	 * pattern:HH:mm:ss
 	 *
 	 * @see ConstDatePattern#TIME
@@ -102,10 +95,11 @@ public abstract class DateFormatter {
 
 	static {
 		CACHE.put(ConstDatePattern.DEFAULT, DEFAULT_JDK8);
-		CACHE.put(ConstDatePattern.DATE, DATE_JDK8);
+		CACHE.put(ConstDatePattern.DATE, DateTimeFormatter.ISO_LOCAL_DATE);
 		CACHE.put(ConstDatePattern.TIME, TIME_JDK8);
 		CACHE.put(ConstDatePattern.TIME_MINUTE, TIME_MINUTE_JDK8);
 		CACHE.put(ConstDatePattern.DATE_MINUTE, DATE_MINUTE_JDK8);
+		CACHE.put(ConstDatePattern.ISO_LOCAL_DATE_TIME, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 	}
 
 	/**
@@ -256,32 +250,6 @@ public abstract class DateFormatter {
 		} else {
 			throw new UnsupportedOperationException();
 		}
-	}
-
-	/**
-	 * 转换时间日期字符串为指定时间日期类型, 目前仅支持LocalDateTime,LocalDate,LocalTime,Instant,Date, 其余类型抛异常UnsupportedOperationException
-	 * @param pattern 时间日期格式
-	 * @param text 待转换字符串
-	 * @param tClass 目标时间日期类型对应的type或class
-	 * @param <T> 目标时间日期类型
-	 * @return 时间日期
-	 */
-	public static <T> T parse(@Nonnull String pattern, @Nullable String text, @Nonnull Class<T> tClass) {
-		return parse(pattern, text, tClass, false);
-	}
-
-	/**
-	 * 转换时间日期字符串为指定时间日期类型, 目前仅支持LocalDateTime,LocalDate,LocalTime,Instant,Date, 其余类型抛异常UnsupportedOperationException
-	 * @param pattern 时间日期格式
-	 * @param text 待转换字符串
-	 * @param tClass 目标时间日期类型对应的type或class
-	 * @param nullIfFailed true, 转换失败返回null; false, 转换失败抛异常
-	 * @param <T> 目标时间日期类型
-	 * @return 时间日期
-	 */
-	public static <T> T parse(@Nonnull String pattern, @Nullable String text, @Nonnull Class<T> tClass,
-			boolean nullIfFailed) {
-		return parse(pattern, text, tClass, nullIfFailed);
 	}
 
 	/**

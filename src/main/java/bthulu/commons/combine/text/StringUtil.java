@@ -162,4 +162,222 @@ public class StringUtil {
 		return s;
 	}
 
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Byte片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Byte cherryPickByte(@Nullable String s, Character delimiter, int index) {
+		return cherryPickByte(s, delimiter, index, 6);
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Byte片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @param expectedSize 所取数据可能的字符长度, 不影响返回值
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Byte cherryPickByte(@Nullable String s, Character delimiter, int index, int expectedSize) {
+		Integer i = cherryPickInt(s, delimiter, index, expectedSize);
+		return i == null ? null : i.byteValue();
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Short片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Short cherryPickShort(@Nullable String s, Character delimiter, int index) {
+		return cherryPickShort(s, delimiter, index, 6);
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Short片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @param expectedSize 所取数据可能的字符长度, 不影响返回值
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Short cherryPickShort(@Nullable String s, Character delimiter, int index, int expectedSize) {
+		Integer i = cherryPickInt(s, delimiter, index, expectedSize);
+		return i == null ? null : i.shortValue();
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Int片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Integer cherryPickInt(@Nullable String s, Character delimiter, int index) {
+		return cherryPickInt(s, delimiter, index, 6);
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Int片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @param expectedSize 所取数据可能的字符长度, 不影响返回值
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Integer cherryPickInt(@Nullable String s, Character delimiter, int index, int expectedSize) {
+		String s1 = cherryPick(s, delimiter, index, expectedSize);
+		if (s1 != null && s1.length() > 0) {
+			try {
+				return Integer.valueOf(s1);
+			} catch (NumberFormatException ignored) {
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Long片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Long cherryPickLong(@Nullable String s, Character delimiter, int index) {
+		return cherryPickLong(s, delimiter, index, 6);
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Long片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @param expectedSize 所取数据可能的字符长度, 不影响返回值
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Long cherryPickLong(@Nullable String s, Character delimiter, int index, int expectedSize) {
+		String s1 = cherryPick(s, delimiter, index, expectedSize);
+		if (s1 != null && s1.length() > 0) {
+			try {
+				return Long.valueOf(s1);
+			} catch (NumberFormatException ignored) {
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Float片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Float cherryPickFloat(@Nullable String s, Character delimiter, int index) {
+		return cherryPickFloat(s, delimiter, index, 6);
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Float片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @param expectedSize 所取数据可能的字符长度, 不影响返回值
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Float cherryPickFloat(@Nullable String s, Character delimiter, int index, int expectedSize) {
+		if (delimiter != null && delimiter == '.') {
+			throw new IllegalArgumentException("delimiter is dot while parse float");
+		}
+		String s1 = cherryPick(s, delimiter, index, expectedSize);
+		if (s1 != null && s1.length() > 0) {
+			try {
+				return Float.valueOf(s1);
+			} catch (NumberFormatException ignored) {
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Double片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Double cherryPickDouble(@Nullable String s, Character delimiter, int index) {
+		return cherryPickDouble(s, delimiter, index, 6);
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的Double片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @param expectedSize 所取数据可能的字符长度, 不影响返回值
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static Double cherryPickDouble(@Nullable String s, Character delimiter, int index, int expectedSize) {
+		String s1 = cherryPick(s, delimiter, index, expectedSize);
+		if (s1 != null && s1.length() > 0) {
+			try {
+				return Double.valueOf(s1);
+			} catch (NumberFormatException ignored) {
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的字符片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static String cherryPick(@Nullable String s, Character delimiter, int index) {
+		return cherryPick(s, delimiter, index, 6);
+	}
+
+	/**
+	 * 提取由分隔符拼接而成的字符串中的字符片段, 与split(s, delimiter)[index]结果一致, 但性能更好, 内存占用更低些
+	 * @param s 由分隔符拼接而成的字符串
+	 * @param delimiter 分隔符
+	 * @param index 被提取字符片段在字符串中的索引位置
+	 * @param expectedSize 所取数据可能的字符长度, 不影响返回值
+	 * @return 第index个分隔符到第index-1个分隔符之间的数据, 如index为0则为第index个分隔符前的所有字符
+	 */
+	public static String cherryPick(@Nullable String s, Character delimiter, int index, int expectedSize) {
+		if (index < 0 || s == null || s.isEmpty()) {
+			return null;
+		}
+		if (delimiter == null && s.length() > index) {
+			return String.valueOf(s.charAt(index));
+		}
+		if (delimiter != null) {
+			int matched = 0;
+			int i = 0;
+			StringBuilder sb = new StringBuilder(expectedSize);
+			while (i < s.length()) {
+				if (matched == index) {
+					char c1 = s.charAt(i);
+					if (c1 == delimiter) {
+						break;
+					}
+					sb.append(s.charAt(i));
+				}
+				if (s.charAt(i) == delimiter) {
+					matched++;
+				}
+				i++;
+			}
+			return sb.length() == 0 ? null : sb.toString();
+		}
+		return null;
+	}
 }
