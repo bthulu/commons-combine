@@ -1,6 +1,5 @@
 package bthulu.commons.combine.time;
 
-import bthulu.commons.combine.constant.ConstDatePattern;
 import bthulu.commons.combine.exception.ExceptionUtil;
 import org.apache.commons.lang3.time.FastDateFormat;
 
@@ -27,79 +26,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * 即便已经做了缓存，不会每次创建对象，但直接使用静态对象仍然能减少在缓存中的查找.
  */
 public abstract class DateFormatter {
+	public static final String PATTERN_DEFAULT = "yyyy-MM-dd HH:mm:ss";
 
-	/**
-	 * pattern:yyyy-MM-dd HH:mm:ss
-	 *
-	 * @see ConstDatePattern#DEFAULT
-	 */
-	public static final FastDateFormat DEFAULT = FastDateFormat.getInstance(ConstDatePattern.DEFAULT);
+	public static final String PATTERN_DATE = "yyyy-MM-dd";
 
-	/**
-	 * pattern:yyyy-MM-dd
-	 *
-	 * @see ConstDatePattern#DATE
-	 */
-	public static final FastDateFormat DATE = FastDateFormat.getInstance(ConstDatePattern.DATE);
+	public static final String PATTERN_TIME = "HH:mm:ss";
 
-	/**
-	 * pattern:HH:mm:ss
-	 *
-	 * @see ConstDatePattern#TIME
-	 */
-	public static final FastDateFormat TIME = FastDateFormat.getInstance(ConstDatePattern.TIME);
+	public static final String PATTERN_TIME_MINUTE = "HH:mm";
 
-	/**
-	 * pattern:HH:mm
-	 *
-	 * @see ConstDatePattern#TIME_MINUTE
-	 */
-	public static final FastDateFormat TIME_MINUTE = FastDateFormat.getInstance(ConstDatePattern.TIME_MINUTE);
+	public static final String PATTERN_DATE_MINUTE = "yyyy-MM-dd HH:mm";
 
-	/**
-	 * pattern:yyyy-MM-dd HH:mm
-	 *
-	 * @see ConstDatePattern#DATE_MINUTE
-	 */
-	public static final FastDateFormat DATE_MINUTE = FastDateFormat.getInstance(ConstDatePattern.DATE_MINUTE);
-
-	/**
-	 * pattern:yyyy-MM-dd HH:mm:ss
-	 *
-	 * @see ConstDatePattern#DEFAULT
-	 */
-	public static final DateTimeFormatter DEFAULT_JDK8 = DateTimeFormatter.ofPattern(ConstDatePattern.DEFAULT);
-
-	/**
-	 * pattern:HH:mm:ss
-	 *
-	 * @see ConstDatePattern#TIME
-	 */
-	public static final DateTimeFormatter TIME_JDK8 = DateTimeFormatter.ofPattern(ConstDatePattern.TIME);
-
-	/**
-	 * pattern:HH:mm
-	 *
-	 * @see ConstDatePattern#TIME_MINUTE
-	 */
-	public static final DateTimeFormatter TIME_MINUTE_JDK8 = DateTimeFormatter.ofPattern(ConstDatePattern.TIME_MINUTE);
-
-	/**
-	 * pattern:yyyy-MM-dd HH:mm
-	 *
-	 * @see ConstDatePattern#DATE_MINUTE
-	 */
-	public static final DateTimeFormatter DATE_MINUTE_JDK8 = DateTimeFormatter.ofPattern(ConstDatePattern.DATE_MINUTE);
+	public static final String PATTERN_ISO_LOCAL_DATE_TIME = "yyyy-MM-dd'T'HH:mm:ss";
 
 	private static final ConcurrentHashMap<String, DateTimeFormatter> CACHE = new ConcurrentHashMap<>(9);
 
 	static {
-		CACHE.put(ConstDatePattern.DEFAULT, DEFAULT_JDK8);
-		CACHE.put(ConstDatePattern.DATE, DateTimeFormatter.ISO_LOCAL_DATE);
-		CACHE.put(ConstDatePattern.TIME, TIME_JDK8);
-		CACHE.put(ConstDatePattern.TIME_MINUTE, TIME_MINUTE_JDK8);
-		CACHE.put(ConstDatePattern.DATE_MINUTE, DATE_MINUTE_JDK8);
-		CACHE.put(ConstDatePattern.ISO_LOCAL_DATE_TIME, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		CACHE.put(PATTERN_DATE, DateTimeFormatter.ISO_LOCAL_DATE);
+		CACHE.put(PATTERN_ISO_LOCAL_DATE_TIME, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 	}
 
 	/**
