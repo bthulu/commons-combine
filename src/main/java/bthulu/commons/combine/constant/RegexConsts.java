@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 /**
  * 公共正则
  */
-public class ConstRegex {
+public class RegexConsts {
 
 	/**
 	 * 手机号, 1字头＋10位数字

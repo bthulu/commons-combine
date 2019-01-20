@@ -3,7 +3,7 @@ package bthulu.commons.combine.constant;
 /**
  * 常用的字符串分隔符
  */
-public abstract class ConstDelimiter {
+public abstract class DelimiterConsts {
 
 	public static final String COMMA = ",";
 
