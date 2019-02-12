@@ -1,5 +1,6 @@
 package bthulu.test;
 
+import bthulu.commons.combine.reflect.BeanUtil;
 import bthulu.commons.combine.text.StringUtil;
 import org.junit.Test;
 
@@ -16,5 +17,12 @@ public class UnitTest {
 			System.out.println(s);
 		}
 
+	}
+
+	@Test
+	public void testDefaultValue() {
+		User user = new User();
+		BeanUtil.writeDefaultValue(user);
+		System.out.println(user);
 	}
 }

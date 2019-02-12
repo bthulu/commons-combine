@@ -1,7 +1,6 @@
 package bthulu.test;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -10,18 +9,17 @@ import java.util.Objects;
  * @author gejian at 2018/9/6 22:02
  */
 public class User {
-	private Integer id;
+	private Short id;
 	private String name;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime ctime;
-	@JsonIgnore
-	private String ignored;
+	private transient String ignored;
 
-	public Integer getId() {
+	public Short getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Short id) {
 		this.id = id;
 	}
 
@@ -67,6 +65,11 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User{" + "id=" + id + ", name='" + name + '\'' + ", ctime=" + ctime + '}';
+		return "User{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", ctime=" + ctime +
+				", ignored='" + ignored + '\'' +
+				'}';
 	}
 }
