@@ -7,31 +7,33 @@ package bthulu.commons.combine.page;
  */
 public class PageRequest {
 
-	private static final int MAX_PAGE_SIZE_DEFAULT = 25;
-	private int pageNo = 1;
-	private int pageSize = 10;
+	private static final int MAX_PAGE_SIZE_DEFAULT = 200;
+	private int pageNum = 1;
+	private int pageSize = 20;
+	// 是否查询总数
+	private boolean count = true;
 
 	private transient int maxPageSize = MAX_PAGE_SIZE_DEFAULT;
 
 	/**
-	 * 限制页内最大行数
+	 * 限制页内最大行数, 不允许前端直接赋值
 	 * @param maxPageSize 允许的最大行数
 	 */
 	public final void limitPageSize(int maxPageSize) {
 		this.maxPageSize = maxPageSize;
 	}
 
-	public int getPageNo() {
-		return pageNo;
+	public int getPageNum() {
+		return pageNum;
 	}
 
 	/**
 	 * 设置当前页码, 首页为1
-	 * @param pageNo 页码, 首页为1, <1时为首页
+	 * @param pageNum 页码, 首页为1, <1时为首页
 	 */
-	public void setPageNo(int pageNo) {
-		if (pageNo > 1) {
-			this.pageNo = pageNo;
+	public void setPageNum(int pageNum) {
+		if (pageNum > 1) {
+			this.pageNum = pageNum;
 		}
 	}
 
@@ -46,8 +48,21 @@ public class PageRequest {
 		this.pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
 	}
 
+	public boolean isCount() {
+		return count;
+	}
+
+	public void setCount(boolean count) {
+		this.count = count;
+	}
+
 	@Override
 	public String toString() {
-		return "PageRequest{" + "pageNo=" + pageNo + ", pageSize=" + pageSize + ", maxPageSize=" + maxPageSize + '}';
+		return "PageRequest{" +
+				"pageNum=" + pageNum +
+				", pageSize=" + pageSize +
+				", count=" + count +
+				", maxPageSize=" + maxPageSize +
+				'}';
 	}
 }
