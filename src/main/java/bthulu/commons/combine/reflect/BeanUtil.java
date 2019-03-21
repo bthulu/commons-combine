@@ -63,6 +63,9 @@ public abstract class BeanUtil {
      * @return 目标对象, 属性同source
      */
     public static <S, T> T copyProperties(S source, T target) {
+        if (source == null) {
+            return null;
+        }
         if (BeanCopierHolder.copierType == 1) {
             org.springframework.cglib.beans.BeanCopier copier = (org.springframework.cglib.beans.BeanCopier) getBeanCopier(
                     source.getClass(), target.getClass());
@@ -96,7 +99,7 @@ public abstract class BeanUtil {
      * @return supplier.get()对象, 属性同source
      */
     public static <S, T> List<T> copyProperties(Collection<S> sources, Supplier<T> supplier) {
-        if (sources == null) {
+        if (sources == null || sources.isEmpty()) {
             return Collections.emptyList();
         }
         List<T> list = new ArrayList<>();

@@ -6,7 +6,7 @@
 
     <groupId>com.github.bthulu</groupId>
     <artifactId>commons-combine</artifactId>
-    <version>0.1.15</version>
+    <version>0.1.16</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
