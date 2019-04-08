@@ -7,25 +7,40 @@ package bthulu.commons.combine.exception;
  * 定义可克隆静态异常{@link CloneableException}, 后续调用{@link CloneableException#clone(String)}抛出
  */
 public class BusinessException extends RuntimeException {
+    public static final String CODE_ILLEGAL_ARGUMENT = "ILLEGAL_ARGUMENT";
 
-	public BusinessException() {
-	}
+    private String code;
 
-	public BusinessException(String message) {
-		super(message);
-	}
+    public BusinessException() {
+    }
 
-	public BusinessException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public BusinessException(String message) {
+        super(message);
+    }
 
-	public BusinessException(Throwable cause) {
-		super(cause);
-	}
+    public BusinessException(String message, boolean writableStackTrace) {
+        super(message, null, true, writableStackTrace);
+    }
 
-	public BusinessException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+    public BusinessException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
+    public BusinessException(Throwable cause) {
+        super(cause);
+    }
+
+    public BusinessException(String message, Throwable cause, boolean enableSuppression,
+                             boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public BusinessException setCode(String code) {
+        this.code = code;
+        return this;
+    }
 }
