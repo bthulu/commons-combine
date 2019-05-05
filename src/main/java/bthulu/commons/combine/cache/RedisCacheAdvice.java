@@ -3,6 +3,7 @@ package bthulu.commons.combine.cache;
 import bthulu.commons.combine.Pair;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Method;
 
+@Aspect
 public abstract class RedisCacheAdvice {
     private static final Logger log = LoggerFactory.getLogger(RedisCacheAdvice.class);
     private static final long maxTimeout = 3600 * 24 * 7;
