@@ -1,53 +1,49 @@
 package bthulu.commons.combine.cache;
 
 import bthulu.commons.combine.Pair;
-import bthulu.commons.combine.exception.Asserts;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.support.StaticMethodMatcherPointcut;
-import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.lang.reflect.Method;
 
-public abstract class RedisCacheAdvice extends StaticMethodMatcherPointcut implements MethodInterceptor {
+public abstract class RedisCacheAdvice {
     private static final Logger log = LoggerFactory.getLogger(RedisCacheAdvice.class);
     private static final long maxTimeout = 3600 * 24 * 7;
+    // 使用SPEL进行key的解析
+    private ExpressionParser parser = new SpelExpressionParser();
+
+    @Pointcut("@annotation(bthulu.commons.combine.cache.Cacheable)")
+    public void cacheCut() {
+    }
+
+    @Pointcut("@annotation(bthulu.commons.combine.cache.CacheEvict)")
+    public void cacheEvictCut() {
+    }
 
     private final String cacheKeyPrefix;
 
-    public RedisCacheAdvice(String prefix) {
-        Asserts.hasText(prefix, "cache key prefix can not be empty");
-        this.cacheKeyPrefix = "ca:" + prefix;
+    public RedisCacheAdvice(String cacheKeyPrefix) {
+        this.cacheKeyPrefix = cacheKeyPrefix + ":ca:";
     }
 
-    @Override
-    public Object invoke(MethodInvocation mi) throws Throwable {
-        Method method = mi.getMethod();
-        Cacheable cacheable = method.getDeclaredAnnotation(Cacheable.class);
-        if (cacheable != null) {
-            return cache(mi, cacheable);
-        }
-        CacheEvict cacheEvict = method.getAnnotation(CacheEvict.class);
-        if (cacheEvict != null) {
-            return evict(mi, cacheEvict);
-        }
-
-        return mi.proceed();
-    }
-
-    private Object cache(MethodInvocation mi, Cacheable cacheable) throws Throwable {
+    @Around("cacheCut()")
+    public Object doCache(ProceedingJoinPoint joinPoint) throws Throwable {
         // 生成缓存key及timeout
         String key = null;
         long timeout = 60;
+
         // 从缓存获取数据
         try {
             // 生成缓存key及timeout
-            Pair<String, Integer> pair = getCacheKeyAndTimeout(mi, cacheable);
+            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+            Pair<String, Integer> pair = getCacheKeyAndTimeout(signature, joinPoint);
             key = pair.getK();
             timeout = pair.getV();
 
@@ -59,7 +55,7 @@ public abstract class RedisCacheAdvice extends StaticMethodMatcherPointcut imple
                 if (log.isDebugEnabled()) {
                     log.debug("缓存命中:" + key);
                 }
-                Class<?> returnType = mi.getMethod().getReturnType();
+                Class<?> returnType = signature.getReturnType();
                 return returnType == void.class ? null : parseObject(s, returnType);
             }
         } catch (Throwable t) {
@@ -70,7 +66,7 @@ public abstract class RedisCacheAdvice extends StaticMethodMatcherPointcut imple
         if (log.isDebugEnabled()) {
             log.debug("缓存未命中:" + key);
         }
-        Object proceed = mi.proceed();
+        Object proceed = joinPoint.proceed();
 
         // 写入缓存
         try {
@@ -83,17 +79,20 @@ public abstract class RedisCacheAdvice extends StaticMethodMatcherPointcut imple
         } catch (Throwable t) {
             log.warn("写入缓存出错", t);
         }
+
         return proceed;
     }
 
-    private Object evict(MethodInvocation mi, CacheEvict cacheEvict) throws Throwable {
+    @Around("cacheEvictCut()")
+    public Object doEvict(ProceedingJoinPoint joinPoint) throws Throwable {
         // 执行切面方法
-        Object proceed = mi.proceed();
+        Object proceed = joinPoint.proceed();
 
         // 删除缓存
         String key = "";
         try {
-            key = getEvictKey(mi, cacheEvict);
+            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+            key = getEvictKey(signature, joinPoint);
             if (!key.isEmpty()) {
                 del(key);
                 if (log.isDebugEnabled()) {
@@ -107,49 +106,38 @@ public abstract class RedisCacheAdvice extends StaticMethodMatcherPointcut imple
         return proceed;
     }
 
-    @Override
-    public boolean matches(Method method, Class<?> targetClass) {
-        return method.getDeclaredAnnotation(Cacheable.class) != null || method.getDeclaredAnnotation(CacheEvict.class) != null;
-    }
-
-    private static final DefaultParameterNameDiscoverer discover = new DefaultParameterNameDiscoverer();
-    // 使用SPEL进行key的解析
-    private ExpressionParser parser = new SpelExpressionParser();
-
-    private Pair<String, Integer> getCacheKeyAndTimeout(MethodInvocation mi, Cacheable cacheable) {
+    private Pair<String, Integer> getCacheKeyAndTimeout(MethodSignature signature, ProceedingJoinPoint joinPoint) {
+        Method method = signature.getMethod();
+        Cacheable cacheable = method.getAnnotation(Cacheable.class);
         String cacheName = cacheable.value();
         String key = cacheable.key();
-        String cacheKey = cacheKeyPrefix + processKey(mi, cacheName, key);
+        String cacheKey = cacheKeyPrefix + processKey(signature, joinPoint, method, cacheName, key);
         return Pair.of(cacheKey, cacheable.timeout(), false);
     }
 
-    private String getEvictKey(MethodInvocation mi, CacheEvict evict) {
+    private String getEvictKey(MethodSignature signature, ProceedingJoinPoint joinPoint) {
+        Method method = signature.getMethod();
+        CacheEvict evict = method.getAnnotation(CacheEvict.class);
         String cacheName = evict.value();
         String key = evict.key();
-        return cacheKeyPrefix + processKey(mi, cacheName, key);
+        return cacheKeyPrefix + processKey(signature, joinPoint, method, cacheName, key);
     }
 
-    private String processKey(MethodInvocation mi, String cacheName, String key) {
+    private String processKey(MethodSignature signature, ProceedingJoinPoint joinPoint, Method method, String cacheName, String key) {
         StringBuilder cacheKey = new StringBuilder(cacheName);
-        Method method = mi.getMethod();
         if (cacheKey.length() == 0) {
-            cacheKey = new StringBuilder(method.getClass().getSimpleName());
+            cacheKey = new StringBuilder(joinPoint.getTarget().getClass().getSimpleName());
             cacheKey.append(":").append(method.getName());
         }
-        Object[] args = mi.getArguments();
-        if (args == null || args.length == 0) {
-            return cacheKey.toString();
-        }
+        Object[] args = joinPoint.getArgs();
         if (key.isEmpty()) {
             for (Object arg : args) {
                 cacheKey.append(":").append(arg);
             }
-            return cacheKey.toString();
-        }
-        // SPEL上下文
-        String[] parameterNames = discover.getParameterNames(method);
-        if (parameterNames != null && parameterNames.length == args.length) {
+        } else {
+            // SPEL上下文
             StandardEvaluationContext context = new StandardEvaluationContext();
+            String[] parameterNames = signature.getParameterNames();
             for (int i = 0; i < args.length; i++) {
                 context.setVariable(parameterNames[i], args[i]);
             }
