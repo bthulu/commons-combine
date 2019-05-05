@@ -159,13 +159,13 @@ public abstract class RedisCacheAdvice extends StaticMethodMatcherPointcut imple
         return cacheKey.toString();
     }
 
-    abstract String get(String key);
+    protected abstract String get(String key);
 
-    abstract void setex(String key, long seconds, String value);
+    protected abstract void setex(String key, long seconds, String value);
 
-    abstract void del(String key);
+    protected abstract void del(String key);
 
-    abstract <T> T parseObject(String json, Class<T> target);
+    protected abstract <T> T parseObject(String json, Class<T> target);
 
-    abstract String toJSONString(Object object);
+    protected abstract String toJSONString(Object object);
 }
