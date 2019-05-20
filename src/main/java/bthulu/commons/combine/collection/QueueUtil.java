@@ -1,7 +1,5 @@
 package bthulu.commons.combine.collection;
 
-import com.google.common.collect.EvictingQueue;
-
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -110,16 +108,6 @@ public class QueueUtil {
 	public static <E> Queue<E> newConcurrentStack() {
 		return (Queue<E>) Collections
 				.asLifoQueue(QueueUtil.newConcurrentNonBlockingDeque());
-	}
-
-	//////////////// 特殊类型Queue：LRUQueue ///////////
-	/**
-	 * LRUQueue, 如果Queue已满，则删除最旧的元素.
-	 *
-	 * 内部实现是ArrayDeque
-	 */
-	public static <E> EvictingQueue<E> newLRUQueue(int maxSize) {
-		return EvictingQueue.create(maxSize);
 	}
 
 }

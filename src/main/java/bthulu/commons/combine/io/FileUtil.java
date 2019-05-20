@@ -6,6 +6,8 @@ import org.apache.commons.lang3.Validate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -63,7 +65,11 @@ public class FileUtil {
 	 * 读取文件到String.
 	 */
 	public static String toString(final File file, Charset cs) throws IOException {
-		return com.google.common.io.Files.asCharSource(file, cs).read();
+		try (FileInputStream fis = new FileInputStream(file);
+			 FileChannel channel = fis.getChannel();) {
+			MappedByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+			return new String(buf.array(), cs);
+		}
 	}
 
 	/**
@@ -296,7 +302,6 @@ public class FileUtil {
 	/**
 	 * 文件复制.
 	 *
-	 * @see Files#copy
 	 * @param from 如果为null，或文件不存在或者是目录，，抛出异常
 	 * @param to 如果to为null，或文件存在但是一个目录，抛出异常
 	 */
@@ -308,7 +313,6 @@ public class FileUtil {
 
 	/**
 	 * 文件复制
-	 * @see Files#copy
 	 * @param from 如果为null，或文件不存在或者是目录，，抛出异常
 	 * @param to 如果to为null，或文件存在但是一个目录，抛出异常
 	 */
@@ -393,23 +397,6 @@ public class FileUtil {
 		}
 	}
 
-	/**
-	 * 创建文件或更新时间戳.
-	 *
-	 * @see com.google.common.io.Files#touch
-	 */
-	public static void touch(String filePath) throws IOException {
-		touch(new File(filePath));
-	}
-
-	/**
-	 * 创建文件或更新时间戳.
-	 *
-	 * @see com.google.common.io.Files#touch
-	 */
-	public static void touch(File file) throws IOException {
-		com.google.common.io.Files.touch(file);
-	}
 
 	/**
 	 * 删除文件.
@@ -594,19 +581,17 @@ public class FileUtil {
 	/**
 	 * 获取文件名的扩展名部分(不包含.)
 	 *
-	 * @see com.google.common.io.Files#getFileExtension
 	 */
 	public static String getFileExtension(File file) {
-		return com.google.common.io.Files.getFileExtension(file.getName());
+		return getFileExtension(file.getName());
 	}
 
 	/**
 	 * 获取文件名的扩展名部分(不包含.)
 	 *
-	 * @see com.google.common.io.Files#getFileExtension
 	 */
 	public static String getFileExtension(String fullName) {
-		return com.google.common.io.Files.getFileExtension(fullName);
+		return fullName.substring(fullName.lastIndexOf(".") + 1);
 	}
 
 }

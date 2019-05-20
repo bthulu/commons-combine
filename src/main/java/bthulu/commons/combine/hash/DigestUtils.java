@@ -1,7 +1,5 @@
 package bthulu.commons.combine.hash;
 
-import com.google.common.io.BaseEncoding;
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -791,12 +789,30 @@ public abstract class DigestUtils {
 		return hexLowerCase(digest(data));
 	}
 
+    private static final char[] LOWER = "0123456789abcdef".toCharArray();
+    private static final char[] UPPER = "0123456789ABCDEF".toCharArray();
+
+    public static char[] encode(byte[] src, boolean upper) {
+        char[] table = upper ? UPPER : LOWER;
+        char[] dst = new char[src.length * 2];
+
+        for (int si = 0, di = 0; si < src.length; si++) {
+            byte b = src[si];
+            dst[di++] = table[(b & 0xf0) >>> 4];
+            dst[di++] = table[(b & 0x0f)];
+        }
+
+        return dst;
+    }
+
 	public static String hexLowerCase(byte[] bytes) {
-		return BaseEncoding.base16().lowerCase().encode(bytes);
+        char[] chars = encode(bytes, false);
+        return new String(chars);
 	}
 
 	public static String hexUpperCase(byte[] bytes) {
-		return hexLowerCase(bytes);
+        char[] chars = encode(bytes, true);
+        return new String(chars);
 	}
 
 }

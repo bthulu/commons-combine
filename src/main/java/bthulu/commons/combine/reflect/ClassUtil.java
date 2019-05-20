@@ -1,6 +1,6 @@
 package bthulu.commons.combine.reflect;
 
-import com.google.common.base.Preconditions;
+import bthulu.commons.combine.exception.Asserts;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +96,7 @@ public class ClassUtil {
 	 * @return the index generic declaration, or Object.class if cannot be determined
 	 */
 	public static Class getClassGenericType(final Class clazz, final int index) {
-		Preconditions.checkArgument(index >= 0, "index must >= 0");
+		Asserts.isTrue(index >= 0, "index must >= 0");
 		Type genType = clazz.getGenericSuperclass();
 
 		if (!(genType instanceof ParameterizedType)) {
@@ -108,8 +108,7 @@ public class ClassUtil {
 		}
 
 		Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
-		Preconditions.checkArgument(index < params.length,
-				"index:%s out of %s's generic params length", index, clazz);
+		Asserts.isTrue(index < params.length, () -> String.format("index:%s out of %s's generic params length", index, clazz));
 		if (!(params[index] instanceof Class)) {
 			if (logger.isDebugEnabled()) {
 				logger.warn(clazz.getName()

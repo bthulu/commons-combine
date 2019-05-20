@@ -2,7 +2,6 @@ package bthulu.commons.combine.io;
 
 import bthulu.commons.combine.Platforms;
 import bthulu.commons.combine.text.StringUtil;
-import com.google.common.io.Files;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -25,13 +24,6 @@ public class FilePathUtil {
 		}
 		return path;
 
-	}
-
-	/**
-	 * 将路径整理，如 "a/../b"，整理成 "b"
-	 */
-	public static String simplifyPath(String path) {
-		return Files.simplifyPath(path);
 	}
 
 	/**

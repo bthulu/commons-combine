@@ -1,9 +1,5 @@
 package bthulu.commons.combine.collection;
 
-import bthulu.commons.combine.collection.primitive.IntObjectHashMap;
-import bthulu.commons.combine.collection.primitive.LongObjectHashMap;
-import com.google.common.collect.*;
-import com.google.common.util.concurrent.AtomicLongMap;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableLong;
@@ -11,7 +7,6 @@ import org.apache.commons.lang3.mutable.MutableLong;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * 关于Map的工具集合，
@@ -34,7 +29,7 @@ public class MapUtil {
 	 * 同时初始化第一个元素
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(final K key, final V value) {
-		HashMap<K, V> map = Maps.newHashMapWithExpectedSize(1);
+		HashMap<K, V> map = newHashMapWithExpectedSize(1);
 		map.put(key, value);
 		return map;
 	}
@@ -49,13 +44,30 @@ public class MapUtil {
 		Validate.isTrue(keys.length == values.length,
 				"keys.length is %d but values.length is %d", keys.length, values.length);
 
-		HashMap<K, V> map = Maps.newHashMapWithExpectedSize(keys.length);
+		HashMap<K, V> map = new HashMap(capacity(keys.length));
 
 		for (int i = 0; i < keys.length; i++) {
 			map.put(keys[i], values[i]);
 		}
 
 		return map;
+	}
+
+	public static int capacity(int expectedSize) {
+		if (expectedSize < 3) {
+			return expectedSize + 1;
+		}
+		if (expectedSize < (1 << (Integer.SIZE - 2))) {
+			// This is the calculation used in JDK8 to resize when a putAll
+			// happens; it seems to be the most conservative calculation we
+			// can make.  0.75 is the default load factor.
+			return (int) ((float) expectedSize / 0.75F + 1.0F);
+		}
+		return Integer.MAX_VALUE; // any large value
+	}
+
+	public static  <K, V> HashMap<K, V> newHashMapWithExpectedSize(int expectedSize) {
+		return new HashMap<>(capacity(expectedSize));
 	}
 
 	/**
@@ -70,7 +82,7 @@ public class MapUtil {
 		Validate.isTrue(keySize == valueSize,
 				"keys.length is %s  but values.length is %s", keySize, valueSize);
 
-		HashMap<K, V> map = Maps.newHashMapWithExpectedSize(keySize);
+		HashMap<K, V> map = newHashMapWithExpectedSize(keySize);
 		Iterator<K> keyIt = keys.iterator();
 		Iterator<V> valueIt = values.iterator();
 
@@ -89,7 +101,7 @@ public class MapUtil {
 	public static <K, V extends Comparable> Map<K, V> sortByValue(Map<K, V> map,
 			final boolean reverse) {
 		return sortByValueInternal(map, reverse
-				? Ordering.from(new ComparableEntryValueComparator<K, V>()).reverse()
+				? new ComparableEntryValueComparator<K, V>().reversed()
 				: new ComparableEntryValueComparator<>());
 	}
 
@@ -121,8 +133,9 @@ public class MapUtil {
 	 */
 	public static <K, V extends Comparable> Map<K, V> topNByValue(Map<K, V> map,
 			final boolean reverse, int n) {
+
 		return topNByValueInternal(map, n, reverse
-				? Ordering.from(new ComparableEntryValueComparator<K, V>()).reverse()
+				? new ComparableEntryValueComparator<K, V>().reversed()
 				: new ComparableEntryValueComparator<>());
 	}
 
@@ -175,49 +188,6 @@ public class MapUtil {
 
 	}
 
-	//////////// 来自Guava，Netty等的特殊Map类型 /////////
-	/**
-	 * 创建Key为弱引用的ConcurrentMap，Key对象可被回收.
-	 *
-	 * JDK没有WeakHashMap的并发实现, 由Guava提供
-	 */
-	public static <K, V> ConcurrentMap<K, V> newWeakKeyConcurrentMap(int initialCapacity,
-			int concurrencyLevel) {
-		return new MapMaker().weakKeys().initialCapacity(initialCapacity)
-				.concurrencyLevel(concurrencyLevel).makeMap();
-	}
-
-	/**
-	 * 创建Value为弱引用的ConcurrentMap，Value对象可被回收.
-	 *
-	 * JDK没有WeakHashMap的并发实现, 由Guava提供
-	 */
-	public static <K, V> ConcurrentMap<K, V> newWeakValueConcurrentMap(
-			int initialCapacity, int concurrencyLevel) {
-		return new MapMaker().weakValues().initialCapacity(initialCapacity)
-				.concurrencyLevel(concurrencyLevel).makeMap();
-	}
-
-	/**
-	 * 创建移植自Netty的key为int的优化HashMap
-	 * @param initialCapacity 默认为8
-	 * @param loadFactor 默认为0.5
-	 */
-	public static <V> IntObjectHashMap<V> newPrimitiveIntKeyMap(int initialCapacity,
-			float loadFactor) {
-		return new IntObjectHashMap<>(initialCapacity, loadFactor);
-	}
-
-	/**
-	 * 创建移植自Netty的key为long的优化HashMap
-	 * @param initialCapacity 默认为8
-	 * @param loadFactor 默认为0.5
-	 */
-	public static <V> LongObjectHashMap<V> newPrimitiveLongKeyMap(int initialCapacity,
-			float loadFactor) {
-		return new LongObjectHashMap<>(initialCapacity, loadFactor);
-	}
-
 	/**
 	 * 创建值为可更改的Integer的HashMap. 可更改的Integer在更改时不需要重新创建Integer对象，节约了内存
 	 * @param initialCapacity 建议为16
@@ -236,59 +206,6 @@ public class MapUtil {
 	public static <K> HashMap<K, MutableLong> newMutableLongValueMap(int initialCapacity,
 			float loadFactor) {
 		return new HashMap<>(initialCapacity, loadFactor);
-	}
-
-	/**
-	 * 以Guava的AtomicLongMap，实现线程安全的HashMap<E,AtomicLong>结构的Counter
-	 */
-	public static <E> AtomicLongMap<E> newConcurrentCounterMap() {
-		return AtomicLongMap.create();
-	}
-
-	/**
-	 * 以Guava的MultiMap，实现的HashMap<E,List<V>>结构的一个Key对应多个值的map.
-	 *
-	 * 注意非线程安全, MultiMap无线程安全的实现.
-	 *
-	 * 另有其他结构存储values的MultiMap，请自行参考MultimapBuilder使用.
-	 * @param expectedKeys 默认为16
-	 * @param expectedValuesPerKey 默认为3
-	 */
-	public static <K, V> ArrayListMultimap<K, V> newListMultiValueMap(int expectedKeys,
-			int expectedValuesPerKey) {
-		return ArrayListMultimap.create(expectedKeys, expectedValuesPerKey);
-	}
-
-	/**
-	 * 以Guava的MultiMap，实现的HashMap<E,TreeSet<V>>结构的一个Key对应多个值的map.
-	 *
-	 * 注意非线程安全, MultiValueMap无线程安全的实现.
-	 *
-	 * 另有其他结构存储values的MultiMap，请自行参考MultimapBuilder使用.
-	 */
-	public static <K, V extends Comparable> SortedSetMultimap<K, V> newSortedSetMultiValueMap() {
-		return MultimapBuilder.hashKeys().treeSetValues().build();
-	}
-
-	/**
-	 * 以Guava的MultiMap，实现的HashMap<E,TreeSet<V>>结构的一个Key对应多个值的map.
-	 *
-	 * 注意非线程安全, MultiValueMap无线程安全的实现.
-	 *
-	 * 另有其他结构存储values的MultiMap，请自行参考MultimapBuilder使用.
-	 */
-	public static <K, V> SortedSetMultimap<K, V> newSortedSetMultiValueMap(
-			Comparator<V> comparator) {
-		return (SortedSetMultimap<K, V>) MultimapBuilder.hashKeys()
-				.treeSetValues(comparator);
-	}
-
-	/**
-	 * 以Guava TreeRangeMap实现的, 一段范围的Key指向同一个Value的Map
-	 */
-	@SuppressWarnings("rawtypes")
-	public static <K extends Comparable, V> TreeRangeMap<K, V> newRangeMap() {
-		return TreeRangeMap.create();
 	}
 
 }

@@ -25,10 +25,7 @@
 
 package bthulu.commons.combine.text;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
-
-import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -158,7 +155,7 @@ public class WildcardMatcher {
 
 	protected static final String PATH_MATCH = "**";
 
-	protected static final Splitter PATH_SPLITTER = Splitter.on(CharMatcher.anyOf("/\\"));
+	protected static final Pattern PATH_SPLITTER = Pattern.compile("[/\\\\]+");
 
 	/**
 	 * Matches path to at least one pattern. Returns index of matched pattern or
@@ -180,10 +177,9 @@ public class WildcardMatcher {
 	 * wildcard, as in Ant. The separator should match the corresponding path
 	 */
 	public static boolean matchPath(String path, String pattern) {
-		List<String> pathElements = PATH_SPLITTER.splitToList(path);
-		List<String> patternElements = PATH_SPLITTER.splitToList(pattern);
-		return matchTokens(pathElements.toArray(new String[0]),
-				patternElements.toArray(new String[0]));
+		String[] pathElements = PATH_SPLITTER.split(path);
+		String[] patternElements = PATH_SPLITTER.split(pattern);
+		return matchTokens(pathElements, patternElements);
 	}
 
 	/**

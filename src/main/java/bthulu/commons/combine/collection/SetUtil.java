@@ -1,14 +1,14 @@
 package bthulu.commons.combine.collection;
 
-import com.google.common.collect.Sets;
-import com.google.common.math.IntMath;
-
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 关于Set的工具集合. guava中的{@link Sets}, 包含了并集#union, 交集#intersection, 差集#differenceView,
+ * 关于Set的工具集合. 也可选用guava中的Sets, 其包含了并集#union, 交集#intersection, 差集#differenceView,
  * 补集(反交集)#disjointView
  *
  * 1. ConcurrenHashSet的构建
@@ -50,7 +50,7 @@ public class SetUtil {
 	 * @return 集合中是否含有指定的元素
 	 */
 	public static boolean containsInSet(int set, int i) {
-		if (!IntMath.isPowerOfTwo(i)) {
+		if (!isPowerOfTwo(i)) {
 			throw new IllegalArgumentException("i:" + i + " is not power of two");
 		}
 		if (set < 0) {
@@ -58,6 +58,10 @@ public class SetUtil {
 		}
 
 		return (set & i) != 0;
+	}
+
+	public static boolean isPowerOfTwo(int x) {
+		return x > 0 & (x & (x - 1)) == 0;
 	}
 
 	/**

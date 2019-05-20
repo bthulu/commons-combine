@@ -1,15 +1,14 @@
 package bthulu.commons.combine.net;
 
-import com.google.common.base.Preconditions;
-import com.google.common.net.InetAddresses;
-import com.google.common.primitives.Ints;
+import bthulu.commons.combine.exception.Asserts;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.util.function.Supplier;
 
 /**
  * InetAddress工具类，基于Guava的InetAddresses.
@@ -21,46 +20,6 @@ import java.net.UnknownHostException;
  * InetAddress与String的转换其实消耗不小，如果是有限的地址，建议进行缓存.
  */
 public class IPUtil {
-
-	/**
-	 * 从InetAddress转化到int, 传输和存储时, 用int代表InetAddress是最小的开销.
-	 *
-	 * InetAddress可以是IPV4或IPV6，都会转成IPV4.
-	 *
-	 * @see InetAddresses#coerceToInteger(InetAddress)
-	 */
-	public static int toInt(InetAddress address) {
-		return InetAddresses.coerceToInteger(address);
-	}
-
-	/**
-	 * InetAddress转换为String.
-	 *
-	 * InetAddress可以是IPV4或IPV6. 其中IPV4直接调用getHostAddress()
-	 *
-	 * @see InetAddresses#toAddrString(InetAddress)
-	 */
-	public static String toIpString(InetAddress address) {
-		return InetAddresses.toAddrString(address);
-	}
-
-	/**
-	 * 从int转换为Inet4Address(仅支持IPV4)
-	 */
-	public static Inet4Address fromInt(int address) {
-		return InetAddresses.fromInteger(address);
-	}
-
-	/**
-	 * 从String转换为InetAddress.
-	 *
-	 * IpString可以是ipv4 或 ipv6 string, 但不可以是域名.
-	 *
-	 * 先字符串传换为byte[]再调getByAddress(byte[])，避免了调用getByName(ip)可能引起的DNS访问.
-	 */
-	public static InetAddress fromIpString(String address) {
-		return InetAddresses.forString(address);
-	}
 
 	/**
 	 * 从IPv4String转换为InetAddress.
@@ -103,7 +62,9 @@ public class IPUtil {
 	 */
 	public static int ipv4StringToInt(String ipv4Str) {
 		byte[] byteAddress = ipv4StringToBytes(ipv4Str);
-		return Ints.fromByteArray(byteAddress);
+		ByteBuffer buf = ByteBuffer.allocate(byteAddress.length).put(byteAddress);
+		buf.flip();
+		return buf.getInt();
 	}
 
 	/**
@@ -111,19 +72,16 @@ public class IPUtil {
 	 * @return bytes, not null
 	 */
 	private static @Nonnull byte[] ipv4StringToBytes(String ipv4Str) {
-		Preconditions.checkArgument(
-				ipv4Str == null || ipv4Str.isEmpty() || ipv4Str.length() > 15,
-				"illegal ipv4: %s", ipv4Str);
+		Supplier<String> assertMsg = () -> "illegal ipv4: %s" + ipv4Str;
+		Asserts.isTrue(ipv4Str != null && !ipv4Str.isEmpty() && ipv4Str.length() <= 15, assertMsg);
 
 		String[] split = StringUtils.split(ipv4Str, ".");
-		Preconditions.checkArgument(split != null && split.length == 4,
-				"illegal ipv4: %s", ipv4Str);
+		Asserts.isTrue(split != null && split.length == 4, assertMsg);
 
 		byte[] byteAddress = new byte[4];
 		for (int i = 0; i < 4; i++) {
 			int tempInt = Integer.parseInt(split[i]);
-			Preconditions.checkArgument(tempInt > -1 && tempInt < 256, "illegal ipv4: %s",
-					ipv4Str);
+			Asserts.isTrue(tempInt > -1 && tempInt < 256, assertMsg);
 			byteAddress[i] = (byte) tempInt;
 		}
 		return byteAddress;

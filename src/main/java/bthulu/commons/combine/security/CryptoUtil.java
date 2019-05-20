@@ -1,7 +1,6 @@
 package bthulu.commons.combine.security;
 
 import bthulu.commons.combine.exception.ExceptionUtil;
-import com.google.common.base.Charsets;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -9,6 +8,7 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -108,7 +108,7 @@ public class CryptoUtil {
 	 */
 	public static String aesDecrypt(byte[] input, byte[] key) {
 		byte[] decryptResult = aes(input, key, Cipher.DECRYPT_MODE);
-		return new String(decryptResult, Charsets.UTF_8);
+		return new String(decryptResult, StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class CryptoUtil {
 	 */
 	public static String aesDecrypt(byte[] input, byte[] key, byte[] iv) {
 		byte[] decryptResult = aes(input, key, iv, Cipher.DECRYPT_MODE);
-		return new String(decryptResult, Charsets.UTF_8);
+		return new String(decryptResult, StandardCharsets.UTF_8);
 	}
 
 	/**

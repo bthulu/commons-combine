@@ -1,7 +1,5 @@
 package bthulu.commons.combine.text;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -80,18 +78,6 @@ public class StringUtil {
 			list.add(str.substring(start, i));
 		}
 		return list;
-	}
-
-	/**
-	 * 使用多个可选的char作为分割符, 还可以设置omitEmptyStrings,trimResults等配置
-	 *
-	 * 设置后的Splitter进行重用，不要每次创建
-	 * @param separatorChars 比如Unix/Windows的路径分割符 "/\\"
-	 *
-	 * @see Splitter
-	 */
-	public static Splitter charsSplitter(final String separatorChars) {
-		return Splitter.on(CharMatcher.anyOf(separatorChars));
 	}
 
 	////////// 其他 char 相关 ///////////
