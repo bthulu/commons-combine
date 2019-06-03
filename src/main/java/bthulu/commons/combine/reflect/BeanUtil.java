@@ -155,6 +155,10 @@ public abstract class BeanUtil extends BeanUtils {
         return target;
     }
 
+    public static <S, T> T copyPropertiesNonNull(S source, Supplier<T> supplier) {
+        return copyPropertiesNonNull(source, supplier.get());
+    }
+
 
     private static final WeakCache<Class<?>, Field[]> fieldCache = new WeakCache<>();
 
