@@ -1,8 +1,14 @@
 package bthulu.commons.combine.reflect;
 
 import com.sun.beans.WeakCache;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.FatalBeanException;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +18,7 @@ import java.util.function.Supplier;
  * 实现深度的BeanOfClasssA<->BeanOfClassB复制, 仅复制名字, 类型相同的字段. 不要是用Apache Common
  * BeanUtils进行类复制，每次就行反射查询对象的属性列表, 非常缓慢.
  */
-public abstract class BeanUtil {
+public abstract class BeanUtil extends BeanUtils {
 
     private static final class BeanCopierHolder {
 
@@ -62,7 +68,7 @@ public abstract class BeanUtil {
      * @param target 目标对象
      * @return 目标对象, 属性同source
      */
-    public static <S, T> T copyProperties(S source, T target) {
+    public static <S, T> T copy(S source, T target) {
         if (source == null) {
             return null;
         }
@@ -86,8 +92,8 @@ public abstract class BeanUtil {
      * @param supplier 目标提供者
      * @return supplier.get()对象, 属性同source
      */
-    public static <S, T> T copyProperties(S source, Supplier<T> supplier) {
-        return copyProperties(source, supplier.get());
+    public static <S, T> T copy(S source, Supplier<T> supplier) {
+        return copy(source, supplier.get());
     }
 
     /**
@@ -98,16 +104,57 @@ public abstract class BeanUtil {
      * @param supplier 目标提供者
      * @return supplier.get()对象, 属性同source
      */
-    public static <S, T> List<T> copyProperties(Collection<S> sources, Supplier<T> supplier) {
+    public static <S, T> List<T> copy(Collection<S> sources, Supplier<T> supplier) {
         if (sources == null || sources.isEmpty()) {
             return Collections.emptyList();
         }
         List<T> list = new ArrayList<>();
         for (S s : sources) {
-            list.add(copyProperties(s, supplier));
+            list.add(copy(s, supplier));
         }
         return list;
     }
+
+
+    public static <S, T> T copyPropertiesNonNull(S source, T target) {
+        Assert.notNull(source, "Source must not be null");
+        Assert.notNull(target, "Target must not be null");
+
+        Class<?> actualEditable = target.getClass();
+        PropertyDescriptor[] targetPds = getPropertyDescriptors(actualEditable);
+
+        for (PropertyDescriptor targetPd : targetPds) {
+            Method writeMethod = targetPd.getWriteMethod();
+            if (writeMethod != null) {
+                PropertyDescriptor sourcePd = getPropertyDescriptor(source.getClass(), targetPd.getName());
+                if (sourcePd != null) {
+                    Method readMethod = sourcePd.getReadMethod();
+                    if (readMethod != null &&
+                            ClassUtils.isAssignable(writeMethod.getParameterTypes()[0], readMethod.getReturnType())) {
+                        try {
+                            if (!Modifier.isPublic(readMethod.getDeclaringClass().getModifiers())) {
+                                readMethod.setAccessible(true);
+                            }
+                            Object value = readMethod.invoke(source);
+                            if (value == null) {
+                                continue;
+                            }
+                            if (!Modifier.isPublic(writeMethod.getDeclaringClass().getModifiers())) {
+                                writeMethod.setAccessible(true);
+                            }
+                            writeMethod.invoke(target, value);
+                        }
+                        catch (Throwable ex) {
+                            throw new FatalBeanException(
+                                    "Could not copy property '" + targetPd.getName() + "' from source to target", ex);
+                        }
+                    }
+                }
+            }
+        }
+        return target;
+    }
+
 
     private static final WeakCache<Class<?>, Field[]> fieldCache = new WeakCache<>();
 
