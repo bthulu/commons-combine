@@ -1,9 +1,11 @@
 package bthulu.commons.combine.collection;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import bthulu.commons.combine.Pair;
+
+import javax.annotation.Nonnull;
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * 关于List的工具集合.
@@ -105,4 +107,64 @@ public class ListUtil {
 		return new SortedArrayList<>(c);
 	}
 
+
+	/**
+	 * 对新旧数据进行对比, 得出新增数据, 共有数据, 及已删除数据
+	 * @param old 旧数据
+	 * @param now 新数据
+	 * @param keyProvider 提供实际进行对比的对象
+	 * @param <E> 数据类型
+	 * @return 数组, 依次为新增数据(来自now), 共有数据(k, 来自old; v, 来自now), 已删除数据(来自old)
+	 */
+	@SuppressWarnings("unchecked")
+	public static @Nonnull
+	<E> CompareResult<E> compare(@Nonnull List<E> old, @Nonnull List<E> now, Function<E, Serializable> keyProvider) {
+		if (old.isEmpty()) {
+			return new CompareResult(now, null, null);
+		}
+		if (now.isEmpty()) {
+			return new CompareResult(null, null, old);
+		}
+
+		Map<Serializable, E> oldMap = new HashMap<>(MapUtil.capacity(old.size()));
+		for (E e : old) {
+			oldMap.put(keyProvider.apply(e), e);
+		}
+		Map<Serializable, E> nowMap = new HashMap<>(MapUtil.capacity(now.size()));
+		for (E e : now) {
+			nowMap.put(keyProvider.apply(e), e);
+		}
+		List<Serializable>[] compare = SetUtil.compare(oldMap.keySet(), nowMap.keySet());
+
+		List<E> add = new ArrayList<>(compare[0].size());
+		for (Serializable key : compare[0]) {
+			E e = nowMap.get(key);
+			add.add(e);
+		}
+		List<Pair<E, E>> share = new ArrayList<>(compare[1].size());
+		for (Serializable key : compare[1]) {
+			Pair<E, E> pair = Pair.of(oldMap.get(key), nowMap.get(key));
+			share.add(pair);
+		}
+		List<E> delete = new ArrayList<>(compare[2].size());
+		for (Serializable key : compare[2]) {
+			E e = oldMap.get(key);
+			delete.add(e);
+		}
+
+		return new CompareResult(add, share, delete);
+	}
+
+	public static class CompareResult<E> {
+		public final List<E> add;
+		public final List<Pair<E, E>> share;
+		public final List<E> delete;
+
+		public CompareResult(List<E> add, List<Pair<E, E>> share, List<E> delete) {
+			this.add = add == null ? new ArrayList<>() : add;
+			this.share = share == null ? new ArrayList<>() : share;
+			this.delete = delete == null ? new ArrayList<>() : delete;
+		}
+
+	}
 }

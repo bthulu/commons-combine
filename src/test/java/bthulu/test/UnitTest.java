@@ -1,10 +1,14 @@
 package bthulu.test;
 
-import bthulu.commons.combine.exception.Asserts;
+import bthulu.commons.combine.collection.ListUtil;
 import bthulu.commons.combine.io.FileUtil;
 import bthulu.commons.combine.reflect.BeanUtil;
+import bthulu.commons.combine.text.Jackson;
 import bthulu.commons.combine.text.StringUtil;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UnitTest {
 
@@ -13,12 +17,44 @@ public class UnitTest {
 		System.out.println(fileExtension);
 	}
 
+	public static class Apple {
+		private String name;
+		private String address;
+
+		public Apple(String name, String address) {
+			this.name = name;
+			this.address = address;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getAddress() {
+			return address;
+		}
+
+		public void setAddress(String address) {
+			this.address = address;
+		}
+	}
+
 	@Test
 	public void testAsserts() {
-		Asserts.isTrue("lll".length() > 1, () -> {
-			System.out.println("===========");
-			return "eeeeee";
-		});
+		List<Apple> old = new ArrayList<>();
+		old.add(new Apple("lisi", "old"));
+		old.add(new Apple("wangwu", "old"));
+		old.add(new Apple("lisan", "old"));
+		List<Apple> now = new ArrayList<>();
+		now.add(new Apple("zhangsan", "now"));
+		now.add(new Apple("wangwu", "now"));
+		now.add(new Apple("lisi", "now"));
+		ListUtil.CompareResult<Apple> compare = ListUtil.compare(old, now, Apple::getName);
+		System.out.println(Jackson.toJSONString(compare));
 	}
 
 	@Test

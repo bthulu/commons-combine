@@ -1,6 +1,7 @@
 package bthulu.commons.combine.collection;
 
 import javax.annotation.Nonnull;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,7 +73,7 @@ public class SetUtil {
 	 * @return 数组, 依次为新增数据, 共有数据, 已删除数据
 	 */
 	@SuppressWarnings("unchecked")
-	public static @Nonnull <E> List<E>[] compare(@Nonnull Set<E> old, @Nonnull Set<E> now) {
+	public static @Nonnull <E extends Serializable> List<E>[] compare(@Nonnull Set<E> old, @Nonnull Set<E> now) {
 		List<E> inserts = new ArrayList<>();
 		List<E> updates = new ArrayList<>();
 		List<E> deletes = new ArrayList<>();
@@ -93,4 +94,5 @@ public class SetUtil {
 		}
 		return new List[]{inserts, updates, deletes};
 	}
+
 }
