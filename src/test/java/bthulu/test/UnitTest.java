@@ -17,6 +17,7 @@ public class UnitTest {
 	public static class Apple {
 		private String name;
 		private String address;
+		private boolean good;
 
 		public Apple(String name, String address) {
 			this.name = name;
@@ -37,6 +38,14 @@ public class UnitTest {
 
 		public void setAddress(String address) {
 			this.address = address;
+		}
+
+		public boolean isGood() {
+			return good;
+		}
+
+		public void setGood(boolean good) {
+			this.good = good;
 		}
 	}
 

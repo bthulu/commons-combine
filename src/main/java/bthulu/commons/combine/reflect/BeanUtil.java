@@ -268,16 +268,28 @@ public abstract class BeanUtil extends BeanUtils {
         Map<String, Object> map = new HashMap<>(MapUtil.capacity(methods.length / 2 + 3));
         for (Method method : methods) {
             String name = method.getName();
-            if (name.length() < 4 || !name.startsWith("get") || method.getParameterCount() > 0
-                    || name.equals("getClass")) {
+            if (name.length() < 3 || method.getParameterCount() > 0 || name.equals("getClass")) {
                 continue;
             }
-            try {
-                map.put(name.substring(3, 4).toLowerCase() + name.substring(4), method.invoke(pojo));
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                log.error("method invoke error", e);
+            if (name.startsWith("get") && name.length() < 4) {
+                continue;
+            }
+            if (name.startsWith("is")) {
+                try {
+                    map.put(name.substring(2, 3).toLowerCase() + name.substring(3), method.invoke(pojo));
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    log.error("method invoke error", e);
+                }
+            }
+            if (name.startsWith("get") && name.length() > 3) {
+                try {
+                    map.put(name.substring(3, 4).toLowerCase() + name.substring(4), method.invoke(pojo));
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    log.error("method invoke error", e);
+                }
             }
         }
         return map;
     }
+
 }
