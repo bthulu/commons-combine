@@ -1,6 +1,9 @@
 package bthulu.commons.combine.reflect;
 
+import bthulu.commons.combine.collection.MapUtil;
 import com.sun.beans.WeakCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.util.Assert;
@@ -8,6 +11,7 @@ import org.springframework.util.ClassUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -19,6 +23,7 @@ import java.util.function.Supplier;
  * BeanUtils进行类复制，每次就行反射查询对象的属性列表, 非常缓慢.
  */
 public abstract class BeanUtil extends BeanUtils {
+    private static final Logger log = LoggerFactory.getLogger(BeanUtil.class);
 
     private static final class BeanCopierHolder {
 
@@ -143,8 +148,7 @@ public abstract class BeanUtil extends BeanUtils {
                                 writeMethod.setAccessible(true);
                             }
                             writeMethod.invoke(target, value);
-                        }
-                        catch (Throwable ex) {
+                        } catch (Throwable ex) {
                             throw new FatalBeanException(
                                     "Could not copy property '" + targetPd.getName() + "' from source to target", ex);
                         }
@@ -177,6 +181,7 @@ public abstract class BeanUtil extends BeanUtils {
 
     /**
      * 初始化目标对象的包装类型(Integer, Long, Short, Byte, Boolean, Float, Double, String)字段
+     *
      * @param target 被初始化对象
      */
     public static void writeDefaultValue(Object target) {
@@ -186,7 +191,8 @@ public abstract class BeanUtil extends BeanUtils {
     /**
      * 初始化目标对象的包装类型(Integer, Long, Short, Byte, Boolean, Float, Double, String)字段,
      * 如果指定了某种类型的字段的默认值, 则也会初始化. 如果指定的字段类型与全局类型重复, 以指定字段类型的默认值为准.
-     * @param target 被初始化对象
+     *
+     * @param target   被初始化对象
      * @param defaults 指定的默认值
      */
     public static void writeDefaultValue(Object target, Map<Class<?>, Object> defaults) {
@@ -246,5 +252,32 @@ public abstract class BeanUtil extends BeanUtils {
             }
             return result;
         }
+    }
+
+    /**
+     * 将pojo转化为map, 仅转化pojp的getter方法
+     *
+     * @param pojo java bean对象
+     * @return map
+     */
+    public static Map<String, ?> toMap(Object pojo) {
+        if (pojo instanceof Number || pojo instanceof String) {
+            return Collections.emptyMap();
+        }
+        Method[] methods = pojo.getClass().getMethods();
+        Map<String, Object> map = new HashMap<>(MapUtil.capacity(methods.length / 2 + 3));
+        for (Method method : methods) {
+            String name = method.getName();
+            if (name.length() < 4 || !name.startsWith("get") || method.getParameterCount() > 0
+                    || name.equals("getClass")) {
+                continue;
+            }
+            try {
+                map.put(name.substring(3, 4).toLowerCase() + name.substring(4), method.invoke(pojo));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                log.error("method invoke error", e);
+            }
+        }
+        return map;
     }
 }

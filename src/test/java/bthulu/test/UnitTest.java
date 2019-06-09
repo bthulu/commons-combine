@@ -1,14 +1,11 @@
 package bthulu.test;
 
-import bthulu.commons.combine.collection.ListUtil;
 import bthulu.commons.combine.io.FileUtil;
 import bthulu.commons.combine.reflect.BeanUtil;
-import bthulu.commons.combine.text.Jackson;
 import bthulu.commons.combine.text.StringUtil;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 public class UnitTest {
 
@@ -45,16 +42,9 @@ public class UnitTest {
 
 	@Test
 	public void testAsserts() {
-		List<Apple> old = new ArrayList<>();
-		old.add(new Apple("lisi", "old"));
-		old.add(new Apple("wangwu", "old"));
-		old.add(new Apple("lisan", "old"));
-		List<Apple> now = new ArrayList<>();
-		now.add(new Apple("zhangsan", "now"));
-		now.add(new Apple("wangwu", "now"));
-		now.add(new Apple("lisi", "now"));
-		ListUtil.CompareResult<Apple> compare = ListUtil.compare(old, now, Apple::getName);
-		System.out.println(Jackson.toJSONString(compare));
+		Apple apple = new Apple("lisi", "old");
+		Map<String, ?> stringMap = BeanUtil.toMap(apple);
+		System.out.println(stringMap);
 	}
 
 	@Test
