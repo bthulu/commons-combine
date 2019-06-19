@@ -1,5 +1,6 @@
 package bthulu.test;
 
+import bthulu.commons.combine.DefaultValueUtil;
 import bthulu.commons.combine.io.FileUtil;
 import bthulu.commons.combine.reflect.BeanUtil;
 import bthulu.commons.combine.text.StringUtil;
@@ -67,8 +68,7 @@ public class UnitTest {
 
 	@Test
 	public void testDefaultValue() {
-		User user = new User();
-		BeanUtil.writeDefaultValue(user);
-		System.out.println(user);
+		boolean nullOrDefault = DefaultValueUtil.hasNullOrDefault(23, 32, 45);
+		System.out.println(nullOrDefault);
 	}
 }

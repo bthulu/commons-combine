@@ -63,27 +63,35 @@ public abstract class DefaultValueUtil {
         return t == null || !t;
     }
 
-    public static boolean isNullOrDefault(Byte t) {
-        return t == null || t == 0;
+    public static boolean isNullOrDefault(Number t) {
+        return t == null || t.intValue() == 0;
     }
 
-    public static boolean isNullOrDefault(Short t) {
-        return t == null || t == 0;
+    /**
+     * 是否全为null或空值
+     * @param t 检测对象
+     * @return 是否全为null或空值
+     */
+    public static boolean isNullOrDefault(Number... t) {
+        for (Number n : t) {
+            if (!isNullOrDefault(n)) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    public static boolean isNullOrDefault(Integer t) {
-        return t == null || t == 0;
-    }
-
-    public static boolean isNullOrDefault(Long t) {
-        return t == null || t == 0;
-    }
-
-    public static boolean isNullOrDefault(Float t) {
-        return t == null || t == 0;
-    }
-
-    public static boolean isNullOrDefault(Double t) {
-        return t == null || t == 0;
+    /**
+     * 是否含有null或空值
+     * @param t 检测对象
+     * @return 是否含有null或空值
+     */
+    public static boolean hasNullOrDefault(Number... t) {
+        for (Number n : t) {
+            if (isNullOrDefault(n)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
