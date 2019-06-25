@@ -120,8 +120,8 @@
 
     <distributionManagement>
         <repository>
-            <id>deploymentRepo</id>
-            <url>http://maven.domiyi.com:9000/nexus/content/repositories/releases/</url>
+            <id>rdc-releases</id>
+            <url>https://repo.rdc.aliyun.com/repository/41925-release-23lEF3/</url>
         </repository>
     </distributionManagement>
 </project>
