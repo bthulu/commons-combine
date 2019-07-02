@@ -6,7 +6,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * 仿spring的Assert, 增加writableStackTrace选择.
+ */
 public abstract class Asserts {
+
     public static void state(boolean expression, String message) {
         state(expression, message, true);
     }
